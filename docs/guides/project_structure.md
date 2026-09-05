@@ -1,0 +1,106 @@
+# PROJECT DIRECTORY STRUCTURE
+
+Detailed directory tree, file responsibilities, and module layout for the **Vanilla Web Book Tracker** app. This describes the structure to be built — no `src/` exists yet in this repo.
+
+---
+
+## 1. Overview Directory Tree
+
+```text
+.
+├── .github/
+│   └── workflows/
+│       └── deploy.yml              # GitHub Actions: build & deploy to GitHub Pages
+├── docs/
+│   ├── content/                    # Book content documents rendered/sourced by the app
+│   │   ├── chapters.md             # 15-chapter map: summaries, sections, sub-sections, time estimates, reading order
+│   │   ├── labs.md                 # 15 hands-on labs, one per chapter, with acceptance criteria
+│   │   ├── flashcards_guide.md     # Gemini/NotebookLM flashcard generation workflow, per chapter
+│   │   ├── glossary.md             # Web API glossary, ~60 terms, linked to chapters
+│   │   ├── resources.md            # MDN/spec/article/video/demo links, grouped by chapter
+│   │   └── quit_criteria_guide.md  # Stop-signal + exit-criteria matrix per chapter
+│   └── guides/                     # Technical guides for building/maintaining the app
+│       ├── architecture_guide.md
+│       ├── book_data_model_guide.md
+│       ├── project_structure.md    # This file
+│       ├── ui_system_design_guide.md
+│       ├── interactive_components_guide.md
+│       └── github_pages_deployment_guide.md
+├── public/
+│   └── favicon.svg
+├── src/
+│   ├── actions/
+│   │   └── backup.ts               # JSON export/import & progress reset handlers
+│   ├── data/
+│   │   ├── bookData.ts             # Facade: getChapters()/getMetaData()/getLabs()/getGlossary()/getResources()/getQuitCriteriaData()
+│   │   ├── bookData.vi.ts          # Vietnamese book content (15 chapters, 95 sections, labs, glossary, resources, quit criteria)
+│   │   └── bookData.en.ts          # English book content - same ids/shape as bookData.vi.ts
+│   ├── i18n/
+│   │   ├── strings.ts              # UI_STRINGS table, one flat key -> string map per language
+│   │   ├── index.ts                # t(key, params) + plural(n, vi, enOne, enOther)
+│   │   └── dom.ts                  # applyStaticTranslations() - data-i18n sweep for header markup
+│   ├── state/
+│   │   └── storage.ts              # AppState singleton, localStorage, read/handsOn/lab/flashcard toggles, Pomodoro logs
+│   ├── styles/
+│   │   ├── main.css
+│   │   ├── _tokens.css
+│   │   ├── _reset-base.css
+│   │   ├── _header.css
+│   │   ├── _tabs.css
+│   │   ├── _main-layout.css
+│   │   ├── _views.css
+│   │   └── _responsive.css
+│   ├── types/
+│   │   └── appState.ts             # Chapter, Section, SubSection, Lab, FlashcardTask, GlossaryTerm, Resource, QuitCriteriaRow, AppState
+│   ├── utils/
+│   │   ├── audio.ts                # Pomodoro chime via Web Audio API
+│   │   ├── icons.ts                # SVG icon dictionary
+│   │   └── notification.ts         # Web Notification API
+│   ├── views/
+│   │   ├── book-view-dashboard.ts    # <book-view-dashboard> - progress stats, active chapter, next section, Pomodoro
+│   │   ├── book-view-chapters.ts     # <book-view-chapters> - 15 accordion chapters, section checklists
+│   │   ├── book-view-labs.ts         # <book-view-labs> - 15 labs + 15 flashcard tasks
+│   │   ├── book-view-glossary.ts     # <book-view-glossary> - searchable Web API glossary
+│   │   ├── book-view-resources.ts    # <book-view-resources> - resource catalog with bookmarks
+│   │   └── book-view-quitcriteria.ts # <book-view-quitcriteria> - stop-signal/exit-criteria matrix
+│   ├── constants.ts                # STORAGE_KEY, THEME_KEY, LANG_KEY, ROUTE_IDS
+│   ├── main.ts                     # Bootstrap: load state -> apply theme -> router -> listeners -> renderAll()
+│   ├── progress.ts                 # calculateProgress(): read/hands-on/lab weighted %, active chapter, next section
+│   ├── renderer.ts                 # registerRenderListener() / renderAll()
+│   ├── router.ts                   # Hash router (#/route), tab switching, state sync
+│   ├── toast.ts                    # Toast notification utility
+│   └── vite-env.d.ts
+├── .gitignore
+├── index.html                      # Header, nav tabs, view containers, toast container
+├── package.json
+├── package-lock.json
+├── README.md
+├── tsconfig.json
+└── vite.config.ts                  # base: './' for GitHub Pages
+```
+
+---
+
+## 2. Directory Responsibilities
+
+### `.github/`
+`deploy.yml` — on push to `main`/`master`: `npm ci`, `npm run build`, deploy `dist/` to GitHub Pages.
+
+### `docs/content/` (book content — see individual files for detail)
+- **`chapters.md`**: source of the 15-chapter reading map (summaries, sections, sub-sections, time estimates, suggested reading order).
+- **`labs.md`**: source of the 15 `Lab` objects.
+- **`flashcards_guide.md`**: process doc for the 15 `FlashcardTask` completion criteria — not a data source, a how-to.
+- **`glossary.md`**: source of `GlossaryTerm[]`.
+- **`resources.md`**: source of `Resource[]`.
+- **`quit_criteria_guide.md`**: source of `QuitCriteriaRow[]`.
+
+### `docs/guides/`
+- **`architecture_guide.md`**: architecture, tech stack, design patterns, build blueprint.
+- **`book_data_model_guide.md`**: the data contract — interfaces, id conventions, full chapter/section id map. Read first.
+- **`project_structure.md`**: this file.
+- **`ui_system_design_guide.md`**: CSS tokens, `@layer` structure, SVG icons.
+- **`interactive_components_guide.md`**: PRD/UX specs, component lifecycles, state contracts.
+- **`github_pages_deployment_guide.md`**: CI/CD.
+
+### `src/`
+Mirrors the sibling roadmap-tracker project's layout; see **[architecture_guide.md](./architecture_guide.md)** for the design patterns behind each module, and **[book_data_model_guide.md](./book_data_model_guide.md)** for what `bookData.*.ts` must contain.
