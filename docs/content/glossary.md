@@ -6,6 +6,17 @@ Mọi URL dưới đây dùng dạng chuẩn `developer.mozilla.org/en-US/docs/W
 
 ---
 
+## Chương 1–2 — Hello Vanilla Web / Understanding the web platform
+
+| id | Tên | Mô tả | MDN |
+| :--- | :--- | :--- | :--- |
+| api-service-worker | Service Worker | Script chạy nền, chặn network request để làm offline support (2.4.2). | https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API |
+| api-web-app-install | `beforeinstallprompt` / Installability | Sự kiện cho phép trang tự hiện nút "Cài đặt app" (2.4.1). | https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent |
+| api-storage-manager | StorageManager (`navigator.storage`) | API kiểm tra quota và xin lưu trữ bền vững (persistent), liên quan Data Storage (2.4.3). | https://developer.mozilla.org/en-US/docs/Web/API/StorageManager |
+| api-intl | `Intl` | Namespace chuẩn cho định dạng số/ngày/tiền tệ theo locale — nền tảng Internationalization (2.4.4). | https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl |
+| api-web-share | Web Share API | Gọi hộp thoại chia sẻ gốc của hệ điều hành — ví dụ tiêu biểu cho Capabilities API (2.4.5). | https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share |
+| api-built-in-ai | Built-in AI APIs (Prompt/Translator/Language Detector) | Các API trình duyệt gọi model AI cục bộ, không cần gọi server — nền cho Client-side AI (2.4.6). | https://developer.mozilla.org/en-US/docs/Web/API/Translator_and_Language_Detector_APIs |
+
 ## Chương 3 — The user interface
 
 | id | Tên | Mô tả | MDN |
@@ -114,4 +125,4 @@ Mọi URL dưới đây dùng dạng chuẩn `developer.mozilla.org/en-US/docs/W
 
 ## Tổng số thuật ngữ
 
-13 (ch.3) + ... thực tế đếm: ch3=6, ch4=7, ch5=8, ch6=4, ch7=4, ch8=4, ch9=5, ch10-11=4, ch12=8, ch13=4 → **tổng 54 thuật ngữ**. Bổ sung dần khi làm lab thực tế gặp API mới chưa liệt kê ở đây (ví dụ ch.14/15 khi xuất bản).
+ch1-2=6, ch3=6, ch4=7, ch5=8, ch6=4, ch7=4, ch8=4, ch9=5, ch10-11=4, ch12=8, ch13=4 → **tổng 60 thuật ngữ**. Bổ sung dần khi làm lab thực tế gặp API mới chưa liệt kê ở đây (ví dụ ch.14/15 khi xuất bản).

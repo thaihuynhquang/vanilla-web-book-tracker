@@ -32,7 +32,7 @@ Vanilla TypeScript + native Custom Elements (Light DOM) + layered vanilla CSS + 
 | [chapters.md](docs/content/chapters.md) | Bản đồ 15 chương: tóm tắt, section/sub-section, thời gian đọc, thứ tự ưu tiên. |
 | [labs.md](docs/content/labs.md) | 15 lab thực hành, một lab/chương, kèm acceptance criteria. |
 | [flashcards_guide.md](docs/content/flashcards_guide.md) | Quy trình tạo flashcard bằng Gemini/NotebookLM sau mỗi chương. |
-| [glossary.md](docs/content/glossary.md) | ~54 thuật ngữ Web API theo chương, link MDN. |
+| [glossary.md](docs/content/glossary.md) | ~60 thuật ngữ Web API theo chương, link MDN. |
 | [resources.md](docs/content/resources.md) | Tài liệu đọc thêm: spec, article, video, demo — theo chương. |
 | [quit_criteria_guide.md](docs/content/quit_criteria_guide.md) | Ma trận dừng/skip + exit criteria cho từng chương. |
 
