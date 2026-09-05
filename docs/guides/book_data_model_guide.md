@@ -3,7 +3,7 @@
 This document is the **data contract** for the Vanilla Web Book Tracker. Every other guide and content file in this repo (`chapters.md`, `labs.md`, `glossary.md`, `resources.md`, `quit_criteria_guide.md`, and the app itself once built) reads ids from this document. Read this file first.
 
 > [!IMPORTANT]
-> This document is generated from `vanillia_web_TOC.html` (Manning, *Vanilla Web*, https://www.manning.com/books/vanilla-web). Chapters 1–13 have published section (`x.y`) and sub-section (`x.y.z`) tables of contents. **Chapters 14 ("Beyond basics") and 15 ("Building an app") have no sub-tables published yet** — they are early-access/in-progress chapters. Do not invent structure for them; track them as `tbd: true` with zero sections until Manning publishes the detail and this file is updated.
+> This document **is** the source of truth for the book's structure — chapter/section/sub-section titles and the full id map below are transcribed from the table of contents published on the book's page (Manning, *Vanilla Web*, https://www.manning.com/books/vanilla-web). No other file or external asset backs this data; do not re-derive it from anywhere else. Chapters 1–13 have published section (`x.y`) and sub-section (`x.y.z`) tables of contents. **Chapters 14 ("Beyond basics") and 15 ("Building an app") have no sub-tables published yet** — they are early-access/in-progress chapters. Do not invent structure for them; track them as `tbd: true` with zero sections until Manning publishes the detail and this file is updated.
 
 ---
 
@@ -126,7 +126,7 @@ Section numbering in the id uses the section's position within its chapter (`s1`
 
 ## 5. Full chapter → section id map
 
-Progress is tracked at the section (`x.y`) level. Sub-sections (`x.y.z`) are listed for reading guidance only. Chapters 1–13 total **95 tracked sections**; chapters 14–15 are `tbd`.
+Progress is tracked at the section (`x.y`) level. Sub-sections (`x.y.z`) are listed for reading guidance only. Chapters 1–13 total **95 tracked sections**; chapters 14–15 are `tbd`. This table is the source of truth — the counts in section 6 must always match it exactly; if they ever drift, fix the counts, don't fetch anything to re-verify against.
 
 ### Chapter 1 — `ch-1` — "Hello Vanilla Web"
 | id | num | Title | Sub-sections (display only) |
@@ -308,7 +308,7 @@ Any implementation must have exactly 95 `Section` objects across `bookData.*.ts`
 
 ## 7. Updating this file when Manning publishes chapters 14–15
 
-1. Fetch the updated TOC (liveBook or the Manning book page).
+1. Check the table of contents on the Manning book page or liveBook — no file to fetch or store, just read it and transcribe by hand.
 2. Add the new `x.y` / `x.y.z` rows to the Chapter 14/15 tables above, following the exact id pattern in section 4 (`ch-14-s1`, `ch-14-s2`, …).
 3. Flip `tbd` to `false` only once real sections exist.
 4. Update the counts table in section 6.
