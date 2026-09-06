@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <title>Vanilla Web Book Tracker</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
@@ -39,6 +45,7 @@
         <span id="badge-overall-pct" class="nav-tab-badge"></span>
       </button>
       <button type="button" class="nav-tab" data-nav-tab="chapters" data-i18n="nav.chapters">Chapters</button>
+      <button type="button" class="nav-tab" data-nav-tab="pomodoro" data-i18n="nav.pomodoro">Pomodoro</button>
       <button type="button" class="nav-tab" data-nav-tab="labs" data-i18n="nav.labs">Labs &amp; Flashcards</button>
       <button type="button" class="nav-tab" data-nav-tab="glossary" data-i18n="nav.glossary">Glossary</button>
       <button type="button" class="nav-tab" data-nav-tab="resources" data-i18n="nav.resources">Resources</button>
@@ -48,6 +55,7 @@
     <main class="main-content">
       <book-view-dashboard data-view="dashboard"></book-view-dashboard>
       <book-view-chapters data-view="chapters" hidden></book-view-chapters>
+      <book-view-pomodoro data-view="pomodoro" hidden></book-view-pomodoro>
       <book-view-labs data-view="labs" hidden></book-view-labs>
       <book-view-glossary data-view="glossary" hidden></book-view-glossary>
       <book-view-resources data-view="resources" hidden></book-view-resources>

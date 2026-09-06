@@ -26,9 +26,13 @@ function renderHeaderIcons(): void {
 
 function renderNavTabIcons(): void {
   const iconByTab: Partial<Record<string, string>> = {
+    dashboard: icon("dashboard"),
     chapters: icon("book"),
+    pomodoro: icon("pomodoro"),
     labs: icon("cards"),
     glossary: icon("glossary"),
+    resources: icon("externalLink"),
+    quitcriteria: icon("shieldAlert"),
   };
   document.querySelectorAll<HTMLElement>("[data-nav-tab]").forEach((tab) => {
     const tabIcon = iconByTab[tab.dataset.navTab ?? ""];

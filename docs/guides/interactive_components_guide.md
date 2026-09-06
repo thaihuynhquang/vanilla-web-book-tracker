@@ -9,7 +9,7 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 
 ## 1. Purpose & Interactive Design Principles
 
-1. **Instant Reactive Feedback**: every interaction (checking read/hands-on, expanding a chapter, starting the timer, bookmarking a resource, toggling theme/language) reflects immediately, zero page reload.
+1. **Instant Reactive Feedback**: every interaction (checking read/hands-on, filtering chapters, starting the timer, bookmarking a resource, toggling theme/language) reflects immediately, zero page reload.
 2. **State-Driven Persistence**: every change updates the state store and persists to `localStorage` instantly.
 3. **Three-Axis Progress Model**: overall % = Read (40%) + Hands-on (40%) + Chapter deliverables — labs + flashcards (20%). Pomodoro sessions are tracked but excluded from this formula (see `architecture_guide.md` Pattern 4).
 
@@ -55,7 +55,7 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 
 ### 2.6. Hash Router & Dynamic Navigation Badge
 - **UI Component**: `Navigation Bar Component`.
-- **Flow**: URL hash format `#/view-name` (`dashboard`, `chapters`, `labs`, `glossary`, `resources`, `quitcriteria`) → toggle active tab + matching view container → `#badge-overall-pct` on the Dashboard tab shows the weighted overall %.
+- **Flow**: URL hash format `#/view-name` (`dashboard`, `chapters`, `pomodoro`, `labs`, `glossary`, `resources`, `quitcriteria`) → toggle active tab + matching view container → `#badge-overall-pct` on the Dashboard tab shows the weighted overall %.
 - **AC**:
   - [ ] Direct URL hash access (e.g. `#/quitcriteria`) activates the correct tab.
 
@@ -63,33 +63,44 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 
 ## 3. Dashboard View Specifications (PRD-02)
 
-### 3.1. Three Progress Bars
-- **UI Component**: `Dashboard View Component` (`.progress-triad`).
-- **Requirements**: three separate bars — Read %, Hands-on %, Chapter Deliverables % — plus the combined weighted Overall %.
+### 3.1. Metric Tiles
+- **UI Component**: `Dashboard View Component` (`.stat-grid` → `.metric-card` × 4).
+- **Requirements**: sections read (`readCount/95`), hands-on sections done, chapter deliverables done (`labDoneCount + flashcardDoneCount`), total Pomodoro focus hours. No "overall %" tile — it would duplicate 3.2.
 - **AC**:
-  - [ ] Each bar updates independently and instantly when its underlying state changes.
+  - [ ] Each tile updates instantly when its underlying state changes.
 
-### 3.2. Active Chapter & Next Section Card
-- **User Story**: As a reader, I want to see which chapter I'm on and what to read next without hunting through the Chapters tab.
-- **UI Component**: `Dashboard View Component` ("Next Section" card).
-- **Flow**: Progress Engine finds first chapter not 100% read+hands-on → finds first unread section in it → renders section title + a "Mark as read" button bound to `data-section-id`.
-- **Trigger**: click "Mark as read" → `toggleRead(sectionId)` → Dashboard recalculates and shows the next section or a 100%-chapter state.
+### 3.2. Progress Overview Card
+- **UI Component**: `Dashboard View Component` (`.progress-header` + one `.progress-bar-track`).
+- **Requirements**: title + subtitle, one big weighted Overall % (`.progress-percentage`), one full-width gradient bar (`.progress-bar-fill--dynamic`) driven by that same %. Deliberately a single stat, not a per-axis (read/hands-on/deliverables) breakdown — see `progress.ts`'s `overallPct` weighting in Pattern 4 of `architecture_guide.md` for how the three axes still feed into it.
 - **AC**:
-  - [ ] Clicking the button updates state and recalculates overall % immediately.
+  - [ ] The bar width and the header % always match, since both read `stats.overallPct`.
 
-### 3.3. Pomodoro Summary Card
-- **UI Component**: `Dashboard View Component` (Pomodoro stat card).
-- **Requirements**: total completed sessions, total focus hours. Explicitly **not** part of the overall % ring — labeled as a separate stat, not a progress bar.
+### 3.3. Active Chapter & Next Focus Card
+- **User Story**: As a reader, I want to see which chapter I'm on and what to do next without hunting through the Chapters tab.
+- **UI Component**: `Dashboard View Component` ("Next Focus" card, `.card--accent-primary`).
+- **Flow**: Progress Engine finds first chapter not 100% read+hands-on → if it has an unread section, renders that section + a "Mark as read" button (`data-section-id`); else renders its first section still missing hands-on + a "Mark hands-on" button (`data-handson-id`). When every chapter is complete, renders a `.card--accent-emerald` "all done" state instead.
+- **Trigger**: click either button → `toggleRead(sectionId)` / `toggleHandsOn(sectionId)` → Dashboard recalculates and re-renders.
+- **AC**:
+  - [ ] Clicking a button updates state and recalculates overall % immediately.
+
+### 3.4. Per-Chapter Progress List
+- **User Story**: As a reader, I want to see at a glance which chapters are done, in progress, or untouched, without opening each one.
+- **UI Component**: `Dashboard View Component` (`.chapter-progress-list` → `.chapter-progress-row`, one per non-`tbd` chapter).
+- **Flow**: each row shows the chapter number/title, a `.status-badge--dynamic` pill (`notStarted`/`inProgress`/`done`) + `%`, and a thin progress bar — all derived from `ChapterProgress` (`calculateProgress().chapterProgresses`, see Pattern 4 in `architecture_guide.md`). The same `ChapterProgress` entries drive the Chapters view's per-card badge (§4.1), so the two views always agree for the same chapter.
+- **AC**:
+  - [ ] Status color/label/percentage for a given chapter are identical between the Dashboard row and the Chapters tab card.
 
 ---
 
 ## 4. Chapters View Specifications (PRD-03)
 
-### 4.1. Chapter Accordion
-- **UI Component**: `Chapters View Component` (`<book-view-chapters>`), 15 `.chapter-card` accordions.
-- **Flow**: each chapter card header shows chapter number, title, and a `completed/total` section counter; clicking the header expands/collapses its section list. `tbd` chapters (14, 15) render a "content not yet published" placeholder instead of a section list.
+### 4.1. Always-Expanded Chapter Cards
+- **UI Component**: `Chapters View Component` (`<book-view-chapters>`), 15 `.chapter-card`s, no accordion.
+- **Flow**: every chapter renders fully expanded — header shows chapter number, title, a `N sections · ~M min` meta line, a `.status-badge--dynamic` pill, and `completed/total (pct%)`; body shows an optional chapter-summary box, then all section rows. `tbd` chapters (14, 15) render a "content not yet published" placeholder instead of a section list.
+- **Filtering**: a chapter filter-chip row (`chapterFilterChipsHtml()`, `src/views/helpers.ts`) narrows the list to one chapter at a time, or back to "All chapters" — this is the primary way to navigate a ~140-section page now that there's no collapse/expand.
 - **AC**:
-  - [ ] Only one accordion state is needed per chapter (expanded/collapsed); state does not need to persist across reloads.
+  - [ ] Selected chapter filter and the "missing hands-on" filter (§4.3) compose — both can be active at once.
+  - [ ] Toggling a section's read/hands-on checkbox re-renders the list without losing keyboard focus on that checkbox (the view records and restores `document.activeElement` around the `innerHTML` rebuild).
 
 ### 4.2. Section Checklist (Read + Hands-on)
 - **User Story**: As a reader, I want to separately mark a section as read and as hands-on'd, since some sections are theory-only.
@@ -183,11 +194,13 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 | PRD-01.4 | Import Backup | Import Action | `click` | `importState()` | Validates & restores, rejects invalid files cleanly. |
 | PRD-01.5 | Progress Reset | Reset Action | `click` | `resetProgress()` | Confirms, resets all progress to 0%. |
 | PRD-01.6 | Hash Router | Navigation Bar | `hashchange` | `setActiveTabState()` | Syncs `#/route`, active tab, badge %. |
-| PRD-02.1 | Three Progress Bars | Dashboard | render | `calculateProgress()` | Read/Hands-on/Deliverables bars + Overall. |
-| PRD-02.2 | Next Section Card | Dashboard | `click` | `toggleRead()` | Marks recommended section read, recalculates. |
-| PRD-03.1 | Chapter Accordion | Chapters | `click` | local UI state | Expand/collapse, `tbd` placeholder for ch.14–15. |
-| PRD-03.2 | Section Checklist | Chapters | `change` | `toggleRead()` / `toggleHandsOn()` | Two independent persisted booleans per section. |
-| PRD-03.3 | Missing Hands-on Filter | Chapters | `click` | local filter state | Shows only read-but-not-handson sections. |
+| PRD-02.1 | Metric Tiles | Dashboard | render | `calculateProgress()` | Sections read / hands-on / deliverables / focus hours. |
+| PRD-02.2 | Progress Overview Card | Dashboard | render | `calculateProgress()` | Single Overall % + one gradient bar. |
+| PRD-02.3 | Next Focus Card | Dashboard | `click` | `toggleRead()` / `toggleHandsOn()` | Marks recommended section/hands-on, recalculates. |
+| PRD-02.4 | Chapter Progress List | Dashboard | render | `calculateProgress().chapterProgresses` | Per-chapter status badge + % row, matches Chapters tab. |
+| PRD-03.1 | Always-Expanded Chapter Cards + Filter Chips | Chapters | `click` | local filter state | No accordion; `chapterFilterChipsHtml()` narrows to one chapter; `tbd` placeholder for ch.14–15. |
+| PRD-03.2 | Section Checklist | Chapters | `change` | `toggleRead()` / `toggleHandsOn()` | Two independent persisted booleans per section; checkbox focus preserved across re-render. |
+| PRD-03.3 | Missing Hands-on Filter | Chapters | `click` | local filter state | Shows only read-but-not-handson sections, composes with the chapter filter. |
 | PRD-04.1 | Lab Checklist | Labs | `change` | `toggleLabDone()` | Contributes to 20%-weight axis. |
 | PRD-04.2 | Flashcard Task Checklist | Labs | `change` | `toggleFlashcardDone()` | Contributes to 20%-weight axis, no deck content stored. |
 | PRD-05.1 | Glossary Search | Glossary | `input` | `searchQuery` | Instant filter, empty state. |
@@ -195,9 +208,17 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 | PRD-06.2 | Resource Bookmark | Resources | `click` | `toggleResourceFlag()` | Toggles star icon + `resourceFlags`. |
 | PRD-07.1 | Combined Decision Matrix | Quit Criteria | render | none | 15 cards, stop signal + exit criteria. |
 | PRD-07.2 | Quit Criteria Search | Quit Criteria | `input` | `searchQuery` | Instant filter, empty state. |
+| PRD-08.1 | Pomodoro Timer | Pomodoro | `click` | `setPomodoroSettings()` / `addPomodoroSession()` | Countdown ring, chime + notification on completion, session logged. |
 
 ---
 
-## 10. Pomodoro Timer Specifications (PRD-08, tracked but not weighted)
+## 10. Pomodoro View Specifications (PRD-08, own tab, tracked but not weighted)
 
-Identical mechanics to the sibling roadmap tracker's Schedule view (mode switch Focus/Short Break/Long Break, `25/5`/`50/5`/Custom presets, countdown + SVG progress ring, Web Audio chime, Web Notification, session history log with delete) — reuse that implementation as-is. The only difference here: **no task-linking dropdown** (no per-task Pomodoro assignment, since reading isn't decomposed that finely), and the resulting session count feeds only the Dashboard's Pomodoro Summary card (§3.3), never `calculateProgress()`.
+- **UI Component**: `<book-view-pomodoro>`, its own nav tab (not embedded in Dashboard).
+- **Mechanics**: identical to the sibling roadmap tracker's Schedule view — mode switch Focus/Short Break/Long Break, `25/5`/`50/5`/Custom presets, countdown + SVG progress ring (ambient glow pulses while running, swaps to emerald on break), Web Audio chime, Web Notification, session history log with delete. The only difference from the sibling project: **no task-linking dropdown** (no per-task Pomodoro assignment, since reading isn't decomposed that finely).
+- **Flow**: the timer's own Custom Element keeps its running/paused state in instance fields (not `AppState`) so a global `renderAll()` from an unrelated action (e.g. toggling a section elsewhere) never interrupts a running countdown; only completing a session calls `addPomodoroSession()` and `renderAll()`.
+- **Cross-view effect**: the resulting session count/duration feeds the Dashboard's "focus hours" metric tile (§3.1) — but the timer UI itself lives only on this tab, and Pomodoro sessions are never part of `calculateProgress()`'s weighted formula.
+- **AC**:
+  - [ ] Switching to another tab and back does not reset or pause a running timer.
+  - [ ] Completing a focus session plays the chime, fires a notification (if permitted), and appends to session history.
+  - [ ] Deleting a history entry updates the Dashboard's focus-hours tile.

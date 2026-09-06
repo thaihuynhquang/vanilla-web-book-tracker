@@ -77,7 +77,7 @@ export interface QuitCriteriaText {
   exitCriteria: string;
 }
 
-export type RouteId = "dashboard" | "chapters" | "labs" | "glossary" | "resources" | "quitcriteria";
+export type RouteId = "dashboard" | "chapters" | "pomodoro" | "labs" | "glossary" | "resources" | "quitcriteria";
 
 export type Theme = "dark" | "light";
 export type Lang = "vi" | "en";

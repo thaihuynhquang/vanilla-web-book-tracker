@@ -58,12 +58,13 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   │   └── storage.ts              # AppState singleton, localStorage, read/handsOn/lab/flashcard toggles, Pomodoro logs
 │   ├── styles/
 │   │   ├── main.css
-│   │   ├── _tokens.css
-│   │   ├── _reset-base.css
+│   │   ├── _tokens.css              # Colors, spacing scale, typography scale, radius, shadow tokens
+│   │   ├── _reset-base.css          # Includes prefers-reduced-motion guard
 │   │   ├── _header.css
 │   │   ├── _tabs.css
-│   │   ├── _main-layout.css
-│   │   ├── _views.css
+│   │   ├── _main-layout.css         # Shared primitives: .card, .stat-grid/.metric-card, .status-badge--dynamic, .tag, .item-row
+│   │   ├── _views.css               # Chapter cards, dashboard chapter-progress-list, lab/glossary/resource/quit cards
+│   │   ├── _pomodoro.css            # Pomodoro tab: hero card, ring, mode pills, history
 │   │   └── _responsive.css
 │   ├── types/
 │   │   └── appState.ts             # Chapter, Section, SubSection, Lab, FlashcardTask, GlossaryTerm, Resource, QuitCriteriaRow, AppState
@@ -76,15 +77,16 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   │   ├── base.ts                   # BookView - shared connectedCallback/disconnectedCallback/render-listener lifecycle; skips refresh() while hidden
 │   │   ├── helpers.ts                # chapterFilterChipsHtml(), searchHeaderHtml()/bindSearch() - shared chip-filter and search-input markup, binds without losing focus/caret
 │   │   ├── index.ts                  # registers all <book-view-*> custom elements
-│   │   ├── book-view-dashboard.ts    # <book-view-dashboard> - progress stats, active chapter, next section (or hands-on-pending), Pomodoro
-│   │   ├── book-view-chapters.ts     # <book-view-chapters> - 15 accordion chapters, section checklists
+│   │   ├── book-view-dashboard.ts    # <book-view-dashboard> - metric tiles, progress overview, next-focus card, per-chapter progress list
+│   │   ├── book-view-chapters.ts     # <book-view-chapters> - 15 always-expanded chapter cards, section checklists, chapter filter chips
+│   │   ├── book-view-pomodoro.ts     # <book-view-pomodoro> - standalone Pomodoro timer tab (mode/ring/presets/history)
 │   │   ├── book-view-labs.ts         # <book-view-labs> - 15 labs + 15 flashcard tasks
 │   │   ├── book-view-glossary.ts     # <book-view-glossary> - searchable Web API glossary
 │   │   ├── book-view-resources.ts    # <book-view-resources> - resource catalog with bookmarks
 │   │   └── book-view-quitcriteria.ts # <book-view-quitcriteria> - stop-signal/exit-criteria matrix
-│   ├── constants.ts                # STORAGE_KEY, THEME_KEY, LANG_KEY, ROUTE_IDS
+│   ├── constants.ts                # STORAGE_KEY, THEME_KEY, LANG_KEY, ROUTE_IDS, CHAPTER_STATUS_COLOR
 │   ├── main.ts                     # Bootstrap: load state -> apply theme -> router -> listeners -> renderAll()
-│   ├── progress.ts                 # calculateProgress(): read/hands-on/lab weighted %, active chapter, next section
+│   ├── progress.ts                 # calculateProgress(): read/hands-on/lab weighted %, active chapter, next section, per-chapter ChapterProgress[]
 │   ├── renderer.ts                 # registerRenderListener() / renderAll()
 │   ├── router.ts                   # Hash router (#/route), tab switching, state sync
 │   ├── toast.ts                    # Toast notification utility

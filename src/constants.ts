@@ -7,11 +7,18 @@ export const LANG_KEY = "vanilla-web-tracker-lang";
 export const ROUTE_IDS: RouteId[] = [
   "dashboard",
   "chapters",
+  "pomodoro",
   "labs",
   "glossary",
   "resources",
   "quitcriteria",
 ];
+
+export const CHAPTER_STATUS_COLOR: Record<"notStarted" | "inProgress" | "done", string> = {
+  notStarted: "var(--text-muted)",
+  inProgress: "var(--accent-amber)",
+  done: "var(--accent-emerald)",
+};
 
 export const TOTAL_SECTIONS = 95;
 export const TOTAL_LABS = 15;

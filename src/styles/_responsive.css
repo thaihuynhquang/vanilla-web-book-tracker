@@ -1,10 +1,14 @@
-@media (max-width: 800px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 768px) {
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
   .progress-bar-row {
     grid-template-columns: 100px 1fr 42px;
+  }
+
+  .chapter-card-header {
+    gap: var(--space-xs);
   }
 
   .quit-box {
@@ -12,9 +16,13 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 480px) {
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+
   .app-header {
-    padding: 0.6rem 0.9rem;
+    padding: var(--space-xs) var(--space-sm);
   }
 
   .header-subtitle {
@@ -31,8 +39,17 @@
     width: 100%;
   }
 
+  .nav-tab {
+    padding: var(--space-sm) 0.85rem;
+    font-size: 0.82rem;
+  }
+
   .section-row-checks {
     flex-direction: column;
-    gap: 0.4rem;
+    gap: var(--space-2xs);
+  }
+
+  .chapter-card-header {
+    padding-bottom: var(--space-2xs);
   }
 }

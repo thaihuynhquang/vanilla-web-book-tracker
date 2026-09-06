@@ -6,4 +6,5 @@
 @import "./_tabs.css" layer(components);
 @import "./_main-layout.css" layer(components);
 @import "./_views.css" layer(views);
+@import "./_pomodoro.css" layer(views);
 @import "./_responsive.css" layer(utilities);

@@ -45,7 +45,7 @@ Full directory tree and file responsibilities: **[project_structure.md](./projec
 - **`src/data/`**: `bookData.vi.ts` / `bookData.en.ts` + `bookData.ts` facade — 100% of book content, one file per language.
 - **`src/state/`**: `storage.ts` — singleton `AppState`, `localStorage`.
 - **`src/i18n/`**: `strings.ts`, `index.ts` (`t()`/`plural()`), `dom.ts` (static header sweep).
-- **`src/views/`**: `<book-view-*>` Custom Elements for the 6 tabs (Dashboard, Chapters, Labs, Glossary, Resources, Quit Criteria).
+- **`src/views/`**: `<book-view-*>` Custom Elements for the 7 tabs (Dashboard, Chapters, Pomodoro, Labs, Glossary, Resources, Quit Criteria).
 - **`src/styles/`**: layered CSS (`@layer`) + CSS Custom Properties (`_tokens.css`).
 - **`src/actions/`**, **`src/utils/`**, **`src/types/`**: pure utilities, type interfaces, backup/restore.
 
@@ -104,6 +104,7 @@ Unlike a single deliverables/pomodoro split, this tracker weighs three independe
 - **Pomodoro sessions are tracked and displayed (total sessions, total hours) but deliberately excluded from this formula** — reading a book isn't well modeled by time-boxed focus sessions the way writing code deliverables is; forcing it into the weight would reward clock-watching over comprehension.
 - Active chapter = first chapter that is not 100% read+hands-on.
 - Next section recommendation = first section in the active chapter with `read === false`.
+- `calculateProgress()` also returns `chapterProgresses: ChapterProgress[]` — per-chapter `{ percentage, status: "notStarted"|"inProgress"|"done", statusColor, estMinutes, ... }`, computed once and shared by the Dashboard's chapter-progress-list and the Chapters view's per-card status badge (`CHAPTER_STATUS_COLOR` in `src/constants.ts` maps status → CSS color).
 
 ### Pattern 5: Modular Layered CSS System with CSS Custom Properties
 ```css
@@ -133,7 +134,7 @@ Dark/Light theme via `data-theme` on `<html>`, same token-swap approach as the s
 
 ### Step 2: Core Types & State Store
 1. `src/types/appState.ts`: interfaces from **book_data_model_guide.md** section 2–3 (`Chapter`, `Section`, `Lab`, `FlashcardTask`, `GlossaryTerm`, `Resource`, `QuitCriteriaRow`, `AppState`).
-2. `src/constants.ts`: `STORAGE_KEY`, `THEME_KEY`, `LANG_KEY`, `ROUTE_IDS`.
+2. `src/constants.ts`: `STORAGE_KEY`, `THEME_KEY`, `LANG_KEY`, `ROUTE_IDS`, `CHAPTER_STATUS_COLOR`.
 3. `src/state/storage.ts`: singleton `AppState`, `loadState()`, `saveState()`, `setThemeState()`, `setLangState()`, `toggleRead(sectionId)`, `toggleHandsOn(sectionId)`, `toggleLabDone(labId)`, `toggleFlashcardDone(flashcardId)`, `addPomodoroSession()`.
 
 ### Step 3: Data Model (`src/data/bookData.<lang>.ts`)
@@ -146,7 +147,7 @@ Implement `calculateProgress()` per Pattern 4 above.
 
 ### Step 5: Router & Central Renderer
 1. `src/renderer.ts`: `registerRenderListener()`, `renderAll()`.
-2. `src/router.ts`: hash routing across `#/dashboard`, `#/chapters`, `#/labs`, `#/glossary`, `#/resources`, `#/quitcriteria`.
+2. `src/router.ts`: hash routing across `#/dashboard`, `#/chapters`, `#/pomodoro`, `#/labs`, `#/glossary`, `#/resources`, `#/quitcriteria`.
 
 ### Step 6: Custom Element Views (`src/views/`)
 One `<book-view-*>` per tab per **[interactive_components_guide.md](./interactive_components_guide.md)**.

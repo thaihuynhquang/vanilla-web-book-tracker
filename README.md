@@ -35,7 +35,7 @@ Vanilla TypeScript + native Custom Elements (Light DOM) + layered vanilla CSS + 
 | [book_data_model_guide.md](docs/guides/book_data_model_guide.md) | **Đọc trước tiên.** Schema TypeScript, quy ước id, bảng ánh xạ 15 chương / 95 section. |
 | [architecture_guide.md](docs/guides/architecture_guide.md) | Kiến trúc tổng thể, tech stack, design patterns, blueprint 8 bước. |
 | [project_structure.md](docs/guides/project_structure.md) | Cây thư mục đầy đủ, trách nhiệm từng file. |
-| [interactive_components_guide.md](docs/guides/interactive_components_guide.md) | PRD/UX — 6 tab, state contract, acceptance criteria. |
+| [interactive_components_guide.md](docs/guides/interactive_components_guide.md) | PRD/UX — 7 tab, state contract, acceptance criteria. |
 | [ui_system_design_guide.md](docs/guides/ui_system_design_guide.md) | Design tokens, CSS `@layer`, icon dictionary. |
 | [github_pages_deployment_guide.md](docs/guides/github_pages_deployment_guide.md) | CI/CD GitHub Actions → GitHub Pages. |
 
@@ -55,5 +55,5 @@ Vanilla TypeScript + native Custom Elements (Light DOM) + layered vanilla CSS + 
 Overall % = Read % × 0.4 + Hands-on % × 0.4 + Chapter deliverables % (lab + flashcard) × 0.2
 ```
 
-Pomodoro sessions được theo dõi và hiển thị trên Dashboard nhưng **không** tính vào công thức trên.
+Pomodoro có tab riêng, sessions được theo dõi và tổng giờ tập trung hiển thị lại trên Dashboard, nhưng **không** tính vào công thức trên.
 
