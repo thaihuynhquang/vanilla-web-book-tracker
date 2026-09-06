@@ -1,4 +1,13 @@
-node_modules/
-dist/
 .DS_Store
+Thumbs.db
+node_modules/
 *.log
+.env
+.env.local
+.vscode/
+.idea/
+*.swp
+*.swo
+.cache/
+dist/
+build/
