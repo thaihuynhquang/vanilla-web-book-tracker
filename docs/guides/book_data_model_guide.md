@@ -11,14 +11,15 @@ This document is the **data contract** for the Vanilla Web Book Tracker. Every o
 
 Following the pattern of `planData.vi.ts` / `planData.en.ts` / `planData.ts` in the original roadmap tracker, with one addition: language-independent structure (ids, numbering, subsections, chapter/lab/glossary/resource metadata) lives once in `src/data/shared/`, so id parity between locales is structural rather than merely checked.
 
-- `src/data/shared/*.ts` — `sections.ts`, `chapterMeta.ts`, `labMeta.ts`, `flashcards.ts`, `glossary.ts`, `resources.ts`. Ids, nums, and every field that must not vary by language. Edit these once; both bundles pick it up.
-- `src/data/bookData.vi.ts` — Vietnamese-only prose (chapter summaries, lab titles/goals/requirements/acceptance criteria, quit-criteria text) composed together with `shared/` into `Chapter[]` / `Lab[]` / `QuitCriteriaRow[]`.
-- `src/data/bookData.en.ts` — English translations of the same prose, composed the same way — **identical id set and shape** as the Vietnamese file, guaranteed by both files reading from the same `shared/` records.
+- `src/data/shared/*.ts` — `sections.ts`, `chapterMeta.ts`, `labMeta.ts`, `flashcards.ts`, `resources.ts`. Ids, nums, and every field that must not vary by language. Edit these once; both bundles pick it up.
+- `src/data/glossary/vi.ts` / `en.ts` — full per-locale `GlossaryTerm[]` arrays. `id`, `name`, `chapterIds`, `mdnUrl`, `specUrl` are duplicated identically across both files; only `description` differs by language.
+- `src/data/bookData.vi.ts` — Vietnamese-only prose (chapter summaries, lab titles/goals/requirements/acceptance criteria, quit-criteria text) composed together with `shared/` into `Chapter[]` / `Lab[]` / `QuitCriteriaRow[]`; also re-exports `GLOSSARY_VI` via `getGlossaryVi()`.
+- `src/data/bookData.en.ts` — English translations of the same prose, composed the same way — **identical id set and shape** as the Vietnamese file; also re-exports `GLOSSARY_EN` via `getGlossaryEn()`.
 - `src/data/bookData.ts` — thin facade, picks a bundle by `state.lang` and exposes `getChapters()`, `getMetaData()`, `getLabs()`, `getGlossary()`, `getResources()`, `getQuitCriteriaData()`.
 
-`GlossaryTerm` and `Resource` records live in `shared/` as single objects (not per-locale) because `descriptionVi` and `title` are defined as shared fields in the interfaces below — there is no English variant to diverge, so `getGlossaryVi()`/`getGlossaryEn()` and `getResourcesVi()`/`getResourcesEn()` return the same array.
+`Resource` records still live in `shared/` as single objects (not per-locale) because `title` there is a proper name/link title, not prose to translate, so `getResourcesVi()`/`getResourcesEn()` return the same array. `GlossaryTerm` records are per-locale (see above) since `description` is prose.
 
-**Never rename or reassign an existing id.** Ids are the primary key for completion state persisted in `localStorage`. A dev-only check in `bookData.ts` logs a `console.error` if the id sets of the two language files ever diverge (defence for the prose-keyed records in `bookData.vi.ts`/`bookData.en.ts`) and if the chapter/section/lab/flashcard counts in §6 below don't match what `shared/` actually contains.
+**Never rename or reassign an existing id.** Ids are the primary key for completion state persisted in `localStorage`. A dev-only check in `bookData.ts` logs a `console.error` if the id sets of the vi/en files ever diverge — for chapters, labs, quit-criteria, and glossary — and if the chapter/section/lab/flashcard counts in §6 below don't match what `shared/` actually contains.
 
 ## 2. TypeScript interfaces
 
@@ -68,7 +69,7 @@ export interface GlossaryTerm {
   id: string;           // "api-custom-elements"
   name: string;
   chapterIds: string[]; // chapters where this API is central
-  descriptionVi: string;
+  description: string;  // localized prose — one array per language, see glossary/vi.ts / glossary/en.ts
   mdnUrl: string;
   specUrl?: string;
 }

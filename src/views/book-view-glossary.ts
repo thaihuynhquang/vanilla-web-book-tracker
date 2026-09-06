@@ -54,7 +54,7 @@ export class BookViewGlossary extends BookView {
   private filterTerms(terms: GlossaryTerm[]): GlossaryTerm[] {
     const query = this.searchQuery.trim().toLowerCase();
     return terms.filter((term) => {
-      const matchesQuery = !query || term.name.toLowerCase().includes(query) || term.descriptionVi.toLowerCase().includes(query);
+      const matchesQuery = !query || term.name.toLowerCase().includes(query) || term.description.toLowerCase().includes(query);
       const matchesChapter = !this.selectedChapterId || term.chapterIds.includes(this.selectedChapterId);
       return matchesQuery && matchesChapter;
     });
@@ -64,7 +64,7 @@ export class BookViewGlossary extends BookView {
     return `
       <div class="glossary-card">
         <h3 class="glossary-term-name">${escapeHtml(term.name)}</h3>
-        <p class="glossary-term-desc">${escapeHtml(term.descriptionVi)}</p>
+        <p class="glossary-term-desc">${escapeHtml(term.description)}</p>
         <div class="chip-row">
           ${term.chapterIds.map((id) => `<span class="chip chip--chapter" title="${escapeHtml(chapterTitleById.get(id) ?? id)}">${id.replace("ch-", "Ch. ")}</span>`).join("")}
         </div>

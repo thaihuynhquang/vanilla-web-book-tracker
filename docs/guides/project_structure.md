@@ -35,12 +35,14 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   │   ├── bookData.ts             # Facade: getChapters()/getMetaData()/getLabs()/getGlossary()/getResources()/getQuitCriteriaData(); dev-only id-set and content-count assertions
 │   │   ├── bookData.vi.ts          # Vietnamese chapter summaries, lab content, quit-criteria prose; composes shared/ into Chapter[]/Lab[]/QuitCriteriaRow[]
 │   │   ├── bookData.en.ts          # English translations of the same prose - same ids/shape as bookData.vi.ts
+│   │   ├── glossary/               # Per-locale glossary data - description is the only field that differs
+│   │   │   ├── vi.ts               # GLOSSARY_VI: 60 GlossaryTerm objects, Vietnamese description
+│   │   │   └── en.ts               # GLOSSARY_EN: 60 GlossaryTerm objects, same ids/names/urls, English description
 │   │   └── shared/                 # Language-independent structure - the single source of id parity between vi/en
 │   │       ├── sections.ts         # SECTIONS_BY_CHAPTER: 95 Section objects (ids, nums, subsections, estMinutes)
 │   │       ├── chapterMeta.ts      # CHAPTER_META: chapter id/num/title/tbd/labId/flashcardId/glossaryRefs
 │   │       ├── labMeta.ts          # LAB_META: lab id/chapterId/apisUsed/tbd
 │   │       ├── flashcards.ts       # FLASHCARD_TASKS: 15 FlashcardTask objects
-│   │       ├── glossary.ts         # GLOSSARY: 60 GlossaryTerm objects (description is Vietnamese in both bundles, per the data model)
 │   │       └── resources.ts        # RESOURCES: 41 Resource objects (title is shared across locales, per the data model)
 │   ├── i18n/
 │   │   ├── strings.ts              # UI_STRINGS table, one flat key -> string map per language

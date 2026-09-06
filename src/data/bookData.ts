@@ -35,6 +35,7 @@ function assertContentCounts(): void {
 assertIdSetsMatch("chapters", getChaptersVi().map((c) => c.id), getChaptersEn().map((c) => c.id));
 assertIdSetsMatch("labs", getLabsVi().map((l) => l.id), getLabsEn().map((l) => l.id));
 assertIdSetsMatch("quitCriteria", getQuitCriteriaVi().map((q) => q.id), getQuitCriteriaEn().map((q) => q.id));
+assertIdSetsMatch("glossary", getGlossaryVi().map((t) => t.id), getGlossaryEn().map((t) => t.id));
 assertContentCounts();
 
 function lang(): Lang {

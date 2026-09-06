@@ -43,7 +43,7 @@ export interface GlossaryTerm {
   id: string;
   name: string;
   chapterIds: string[];
-  descriptionVi: string;
+  description: string;
   mdnUrl: string;
   specUrl?: string;
 }

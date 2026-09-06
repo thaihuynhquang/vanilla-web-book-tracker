@@ -2,7 +2,7 @@ import type { Chapter, Lab, QuitCriteriaRow, GlossaryTerm, Resource, FlashcardTa
 import { CHAPTER_META } from "./shared/chapterMeta";
 import { SECTIONS_BY_CHAPTER } from "./shared/sections";
 import { LAB_META } from "./shared/labMeta";
-import { GLOSSARY } from "./shared/glossary";
+import { GLOSSARY_EN } from "./glossary/en";
 import { RESOURCES } from "./shared/resources";
 import { FLASHCARD_TASKS } from "./shared/flashcards";
 
@@ -274,7 +274,7 @@ export function getQuitCriteriaEn(): QuitCriteriaRow[] {
 }
 
 export function getGlossaryEn(): GlossaryTerm[] {
-  return GLOSSARY;
+  return GLOSSARY_EN;
 }
 
 export function getResourcesEn(): Resource[] {
