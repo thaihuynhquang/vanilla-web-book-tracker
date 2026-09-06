@@ -45,7 +45,7 @@ Full directory tree and file responsibilities: **[project_structure.md](./projec
 - **`src/data/`**: `bookData.vi.ts` / `bookData.en.ts` + `bookData.ts` facade — 100% of book content, one file per language.
 - **`src/state/`**: `storage.ts` — singleton `AppState`, `localStorage`.
 - **`src/i18n/`**: `strings.ts`, `index.ts` (`t()`/`plural()`), `dom.ts` (static header sweep).
-- **`src/views/`**: `<book-view-*>` Custom Elements for the 7 tabs (Dashboard, Chapters, Pomodoro, Labs, Glossary, Resources, Quit Criteria).
+- **`src/views/`**: `<book-view-*>` Custom Elements for the 6 tabs (Dashboard, Chapters, Pomodoro, Glossary, Resources, Quit Criteria).
 - **`src/styles/`**: layered CSS (`@layer`) + CSS Custom Properties (`_tokens.css`).
 - **`src/actions/`**, **`src/utils/`**, **`src/types/`**: pure utilities, type interfaces, backup/restore.
 
@@ -147,7 +147,7 @@ Implement `calculateProgress()` per Pattern 4 above.
 
 ### Step 5: Router & Central Renderer
 1. `src/renderer.ts`: `registerRenderListener()`, `renderAll()`.
-2. `src/router.ts`: hash routing across `#/dashboard`, `#/chapters`, `#/pomodoro`, `#/labs`, `#/glossary`, `#/resources`, `#/quitcriteria`.
+2. `src/router.ts`: hash routing across `#/dashboard`, `#/chapters`, `#/pomodoro`, `#/glossary`, `#/resources`, `#/quitcriteria`. `loadState()`/`replaceState()` in `storage.ts` normalize any legacy `#/labs`/`activeTab: "labs"` (pre-merge saves or backups) back to a valid route.
 
 ### Step 6: Custom Element Views (`src/views/`)
 One `<book-view-*>` per tab per **[interactive_components_guide.md](./interactive_components_guide.md)**.
