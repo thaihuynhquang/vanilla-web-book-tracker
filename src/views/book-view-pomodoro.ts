@@ -8,7 +8,7 @@ import { BookView } from "./base";
 
 type PomodoroMode = "focus" | "shortBreak" | "longBreak";
 
-const RING_RADIUS = 54;
+const RING_RADIUS = 56;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
 export class BookViewPomodoro extends BookView {
@@ -31,9 +31,9 @@ export class BookViewPomodoro extends BookView {
           <h2 data-i18n="pomodoro.stats.title">${t("pomodoro.stats.title")}</h2>
           <div class="pomodoro-widget">
             <div class="pomodoro-modes">
-              <button type="button" class="pomodoro-mode-btn active" data-pomo-mode="focus" data-i18n="pomodoro.mode.focus">${t("pomodoro.mode.focus")}</button>
-              <button type="button" class="pomodoro-mode-btn" data-pomo-mode="shortBreak" data-i18n="pomodoro.mode.shortBreak">${t("pomodoro.mode.shortBreak")}</button>
-              <button type="button" class="pomodoro-mode-btn" data-pomo-mode="longBreak" data-i18n="pomodoro.mode.longBreak">${t("pomodoro.mode.longBreak")}</button>
+              <button type="button" class="pomodoro-mode-btn active" data-pomo-mode="focus" aria-pressed="true" data-i18n="pomodoro.mode.focus">${t("pomodoro.mode.focus")}</button>
+              <button type="button" class="pomodoro-mode-btn" data-pomo-mode="shortBreak" aria-pressed="false" data-i18n="pomodoro.mode.shortBreak">${t("pomodoro.mode.shortBreak")}</button>
+              <button type="button" class="pomodoro-mode-btn" data-pomo-mode="longBreak" aria-pressed="false" data-i18n="pomodoro.mode.longBreak">${t("pomodoro.mode.longBreak")}</button>
             </div>
             <div class="pomodoro-ring-wrap">
               <svg viewBox="0 0 120 120" class="pomodoro-ring">
@@ -41,16 +41,16 @@ export class BookViewPomodoro extends BookView {
                 <circle cx="60" cy="60" r="${RING_RADIUS}" class="pomodoro-ring-progress" id="pomo-ring-progress"
                   stroke-dasharray="${RING_CIRCUMFERENCE}" stroke-dashoffset="0"/>
               </svg>
-              <div class="pomodoro-time" id="pomo-time-display">25:00</div>
+              <div class="pomodoro-time" id="pomo-time-display" role="timer" aria-live="off">25:00</div>
             </div>
             <div class="pomodoro-controls">
               <button type="button" class="btn btn-primary" id="pomo-toggle"></button>
-              <button type="button" class="btn btn-ghost" id="pomo-reset" data-i18n="pomodoro.reset">${t("pomodoro.reset")}</button>
+              <button type="button" class="btn btn-ghost" id="pomo-reset">${icon("rotateCcw")}<span data-i18n="pomodoro.reset">${t("pomodoro.reset")}</span></button>
             </div>
             <div class="pomodoro-presets">
-              <button type="button" class="chip" data-pomo-preset="25-5" data-i18n="pomodoro.preset.2505">${t("pomodoro.preset.2505")}</button>
-              <button type="button" class="chip" data-pomo-preset="50-5" data-i18n="pomodoro.preset.5005">${t("pomodoro.preset.5005")}</button>
-              <button type="button" class="chip" id="pomo-preset-custom" data-i18n="pomodoro.preset.custom">${t("pomodoro.preset.custom")}</button>
+              <button type="button" class="chip" data-pomo-preset="25-5" aria-pressed="false" data-i18n="pomodoro.preset.2505">${t("pomodoro.preset.2505")}</button>
+              <button type="button" class="chip" data-pomo-preset="50-5" aria-pressed="false" data-i18n="pomodoro.preset.5005">${t("pomodoro.preset.5005")}</button>
+              <button type="button" class="chip" id="pomo-preset-custom" aria-expanded="false" data-i18n="pomodoro.preset.custom">${t("pomodoro.preset.custom")}</button>
             </div>
             <div class="pomodoro-custom-form" id="pomo-custom-form" hidden>
               <label>
@@ -64,10 +64,13 @@ export class BookViewPomodoro extends BookView {
               <button type="button" class="btn btn-primary btn-sm" id="pomo-custom-apply" data-i18n="pomodoro.custom.apply">${t("pomodoro.custom.apply")}</button>
             </div>
           </div>
-          <div class="pomodoro-stats" id="dash-pomodoro-stats"></div>
         </div>
+        <section class="stat-grid" id="pomo-metrics"></section>
         <div class="card pomodoro-history-card">
-          <h3 data-i18n="pomodoro.history.title">${t("pomodoro.history.title")}</h3>
+          <div class="progress-header">
+            <span class="progress-title" data-i18n="pomodoro.history.title">${t("pomodoro.history.title")}</span>
+            <span class="section-heading-subtitle" id="pomo-history-count"></span>
+          </div>
           <ul class="pomodoro-history-list" id="pomo-history-list"></ul>
         </div>
       </section>
@@ -83,11 +86,13 @@ export class BookViewPomodoro extends BookView {
         const [work, brk] = (btn.dataset.pomoPreset ?? "25-5").split("-").map(Number);
         setPomodoroSettings(work, brk, getState().pomodoroSettings.longBreakMinutes);
         this.resetTimer();
+        this.syncPresetChips();
       });
     });
-    this.querySelector("#pomo-preset-custom")?.addEventListener("click", () => {
+    this.querySelector("#pomo-preset-custom")?.addEventListener("click", (e) => {
       const form = this.querySelector<HTMLElement>("#pomo-custom-form");
       if (form) form.hidden = !form.hidden;
+      (e.currentTarget as HTMLElement).setAttribute("aria-expanded", form ? String(!form.hidden) : "false");
     });
     this.querySelector("#pomo-custom-apply")?.addEventListener("click", () => {
       const work = Number(this.querySelector<HTMLInputElement>("#pomo-custom-work")?.value);
@@ -95,21 +100,41 @@ export class BookViewPomodoro extends BookView {
       if (Number.isFinite(work) && work > 0 && Number.isFinite(brk) && brk > 0) {
         setPomodoroSettings(work, brk, getState().pomodoroSettings.longBreakMinutes);
         this.resetTimer();
+        this.syncPresetChips();
       }
     });
 
     this.remainingSeconds = this.modeMinutes() * 60;
     this.updateTimerDisplay();
     this.updateToggleButton();
+    this.syncPresetChips();
+  }
+
+  private syncPresetChips(): void {
+    const settings = getState().pomodoroSettings;
+    this.querySelectorAll<HTMLElement>("[data-pomo-preset]").forEach((btn) => {
+      const [work, brk] = (btn.dataset.pomoPreset ?? "").split("-").map(Number);
+      const isActive = work === settings.workMinutes && brk === settings.breakMinutes;
+      btn.classList.toggle("chip--active", isActive);
+      btn.setAttribute("aria-pressed", String(isActive));
+    });
+  }
+
+  private setConfigEnabled(enabled: boolean): void {
+    this.querySelectorAll<HTMLButtonElement>("[data-pomo-preset], #pomo-preset-custom, #pomo-custom-apply").forEach((btn) => {
+      btn.disabled = !enabled;
+    });
   }
 
   private setMode(mode: PomodoroMode): void {
     this.mode = mode;
     this.querySelectorAll<HTMLElement>("[data-pomo-mode]").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.pomoMode === mode);
+      const isActive = btn.dataset.pomoMode === mode;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-pressed", String(isActive));
     });
-    const ringWrap = this.querySelector<HTMLElement>(".pomodoro-ring-wrap");
-    ringWrap?.classList.toggle("break", mode !== "focus");
+    const widget = this.querySelector<HTMLElement>(".pomodoro-widget");
+    widget?.classList.toggle("break", mode !== "focus");
     this.resetTimer();
   }
 
@@ -130,6 +155,7 @@ export class BookViewPomodoro extends BookView {
     this.running = true;
     this.endsAt = Date.now() + this.remainingSeconds * 1000;
     this.updateToggleButton();
+    this.setConfigEnabled(false);
     this.querySelector(".pomodoro-ring-wrap")?.classList.add("running");
     this.intervalId = window.setInterval(() => this.tick(), 250);
   }
@@ -141,6 +167,7 @@ export class BookViewPomodoro extends BookView {
     this.running = false;
     this.endsAt = null;
     this.updateToggleButton();
+    this.setConfigEnabled(true);
     this.querySelector(".pomodoro-ring-wrap")?.classList.remove("running");
     this.stopInterval();
   }
@@ -220,13 +247,45 @@ export class BookViewPomodoro extends BookView {
 
     const state = getState();
 
-    const pomoStatsEl = this.querySelector("#dash-pomodoro-stats");
-    if (pomoStatsEl) {
-      const totalMinutes = state.pomodoroSessions.reduce((sum, s) => sum + s.durationMinutes, 0);
-      pomoStatsEl.innerHTML = `
-        <div class="pomodoro-stat"><span class="pomodoro-stat-value">${state.pomodoroSessions.length}</span><span class="pomodoro-stat-label">${t("pomodoro.stats.sessions")}</span></div>
-        <div class="pomodoro-stat"><span class="pomodoro-stat-value">${(totalMinutes / 60).toFixed(1)}</span><span class="pomodoro-stat-label">${t("pomodoro.stats.hours")}</span></div>
+    const metricsEl = this.querySelector("#pomo-metrics");
+    if (metricsEl) {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      const todaySessions = state.pomodoroSessions.filter((s) => new Date(s.completedAt).getTime() >= startOfToday.getTime());
+      const todayMinutes = todaySessions.reduce((sum, s) => sum + s.durationMinutes, 0);
+      const todayHoursStr = new Intl.NumberFormat(state.lang === "en" ? "en-US" : "vi-VN", {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      }).format(todayMinutes / 60);
+
+      metricsEl.innerHTML = `
+        <div class="metric-card">
+          <div class="metric-icon metric-icon--primary">${icon("pomodoro")}</div>
+          <div class="metric-info">
+            <span class="metric-value">${todaySessions.length}</span>
+            <span class="metric-label">${t("pomodoro.metric.todaySessions")}</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon metric-icon--emerald">${icon("clock")}</div>
+          <div class="metric-info">
+            <span class="metric-value">${todayMinutes} ${t("pomodoro.history.minutes")}</span>
+            <span class="metric-label">${t("pomodoro.metric.todayMinutes", { hours: todayHoursStr })}</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon metric-icon--amber">${icon("trophy")}</div>
+          <div class="metric-info">
+            <span class="metric-value">${state.pomodoroSessions.length}</span>
+            <span class="metric-label">${t("pomodoro.metric.totalSessions")}</span>
+          </div>
+        </div>
       `;
+    }
+
+    const historyCountEl = this.querySelector("#pomo-history-count");
+    if (historyCountEl) {
+      historyCountEl.textContent = t("pomodoro.history.count", { count: state.pomodoroSessions.length });
     }
 
     const historyEl = this.querySelector("#pomo-history-list");
@@ -237,8 +296,9 @@ export class BookViewPomodoro extends BookView {
         historyEl.innerHTML = state.pomodoroSessions
           .map((s, i) => `
             <li class="pomodoro-history-item">
+              <span class="tag">${icon("checkCircle")} +1 Pomodoro</span>
               <span>${new Date(s.completedAt).toLocaleString()}</span>
-              <span class="history-duration">${s.durationMinutes} ${t("pomodoro.history.minutes")}</span>
+              <span class="history-duration">(${s.durationMinutes} ${t("pomodoro.history.minutes")})</span>
               <button type="button" class="icon-btn" data-history-index="${i}" aria-label="${t("pomodoro.history.delete")}">${icon("close")}</button>
             </li>
           `)

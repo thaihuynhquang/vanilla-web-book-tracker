@@ -131,8 +131,12 @@ Sticky, `justify-content: space-between`. Children: `.header-brand` (logo + "Van
   - Read + hands-on: `--accent-emerald` pill, "Hoàn thành"/"Done" — the row itself also gets `.item-row.checked` (slightly dimmed, faint emerald tint).
 
 ### 3.6. Pomodoro View (`<book-view-pomodoro>`) — own tab
-- **Hero card** (`.pomodoro-hero-card`): mode segmented-pill group (Focus/Short Break/Long Break), an SVG progress ring (`.pomodoro-ring-wrap`, ambient glow via a `::before` radial-gradient that pulses while `.running`, emerald instead of primary while `.break`), digital countdown (`.pomodoro-time`, tabular-nums), Start/Reset buttons, duration presets (`25/5`, `50/5`, custom form), and a completed-sessions/total-hours stat pair.
-- **History card** (`.pomodoro-history-card`): reverse-chronological session log, each row deletable.
+- **Layout**: hero card, metric row, and history card all span the same full content width (no card-specific `max-width`) so the tab lines up with every other tab's cards — `.pomodoro-container > .card, .pomodoro-container > .stat-grid { margin-bottom: 0 }` avoids the double-margin (container `gap` + `.card`'s own `margin-bottom`) that used to throw the cards' vertical rhythm off.
+- **Hero card** (`.pomodoro-hero-card`): mode segmented-pill group (Focus/Short Break/Long Break, `aria-pressed` synced with `.active`), an SVG progress ring (`.pomodoro-ring-wrap`, sized `clamp(280px, 62vw, 400px)`, 12px stroke, ambient glow via a `::before` radial-gradient that pulses while `.running`), digital countdown (`.pomodoro-time`, tabular-nums, `clamp(2.4rem, 11vw, 3.5rem)`, `role="timer"`), pill-shaped Start/Reset buttons (Reset carries the `rotateCcw` icon), and duration presets (`25/5`, `50/5`, custom form) with the active preset getting `.chip--active`/`aria-pressed`.
+- **Break mode recolors the whole control cluster, not just the ring**: `setMode()` toggles `.break` on `.pomodoro-widget` (not the ring wrapper alone), so `.pomodoro-widget.break` drives the ring, its glow, the active Short/Long Break pill, and the Start/Pause button all switching from `--primary` to `--accent-emerald` together.
+- **Interaction feedback follows the control's shape**: focus rings and the pressed state use `outline`/`box-shadow`, which clip to `border-radius`, never a background overlay or the bare UA rectangle — `.pomodoro-mode-btn` is in the shared `:focus-visible` group in `_main-layout.css` for this reason. Preset chips and the custom-apply button get `disabled` while the timer is running (`setConfigEnabled()`) so a stray click can't silently reset an in-progress session; mode pills, chips, and `.btn` all get hover/`:active` press states from the shared rules in `_main-layout.css`. Those rules are scoped `button.chip` (not bare `.chip`) so the static `<span class="chip">` tags used as tags elsewhere (glossary chapter refs, lab API chips, resource-type chips) stay visually inert.
+- **Metric row** (`#pomo-metrics.stat-grid`): three `.metric-card` tiles reusing the Dashboard's tile language (§3.3) — today's session count, today's focus minutes (+ hours, locale-formatted), and lifetime session count.
+- **History card** (`.pomodoro-history-card`): a `progress-card`-shaped card — `.progress-header` (title left, a `{count} sessions` subtitle right) over a reverse-chronological list of card-style rows (`.pomodoro-history-item`, `.item-row`-like shape), each with an emerald "+1 Pomodoro" `.tag`, timestamp, duration, and a compact 32px delete `.icon-btn` with a rose hover.
 - Session data (`state.pomodoroSessions`) also feeds the Dashboard's "focus hours" stat tile (§3.3) — but the timer UI itself lives only here, not on the Dashboard.
 
 ### 3.7. Deliverable Card (`.deliverable-card`)
@@ -163,16 +167,19 @@ One flat `ICONS` dictionary, one raw SVG string per key (24×24 viewBox, `curren
 | `bookOpen` | Section row "read" checkbox label, Dashboard "sections read" metric tile |
 | `flask` | Section row "hands-on" checkbox label, lab deliverable card header, Dashboard "hands-on" metric tile |
 | `target` | Dashboard "deliverables" metric tile |
-| `pomodoro` | Pomodoro tab nav icon, Dashboard "focus hours" metric tile |
+| `pomodoro` | Pomodoro tab nav icon, Dashboard "focus hours" metric tile, Pomodoro tab "today's sessions" metric tile |
 | `dashboard` | Dashboard tab nav icon |
 | `layers` | Dashboard chapter-progress-list section heading |
 | `rocket` | Dashboard next-focus card tag |
 | `check` | Dashboard next-focus card CTA buttons |
-| `checkCircle` | Dashboard "all chapters done" state, Quit Criteria exit-criteria box |
+| `checkCircle` | Dashboard "all chapters done" state, Quit Criteria exit-criteria box, Pomodoro history row "+1 Pomodoro" tag |
 | `shieldAlert` | Quit Criteria tab nav icon |
 | `cards` | Flashcard deliverable card header (chapter card) |
 | `glossary` (magnifying glass over `{ }`) | Glossary tab nav icon |
 | `close` | Pomodoro history row delete button |
-| `chevronDown`, `trophy`, `clock`, `skip`, `trash` | Defined in the dictionary, currently unused — free for future components |
+| `clock` | Pomodoro tab "today's minutes" metric tile |
+| `trophy` | Pomodoro tab "total sessions" metric tile |
+| `rotateCcw` | Pomodoro Reset button — deliberately not `reset` (that key is a trash-can glyph reused by the header's destructive Reset-data button) |
+| `chevronDown`, `skip`, `trash` | Defined in the dictionary, currently unused — free for future components |
 
 All other icons (Export, Import, Reset, Sun/Moon theme, Star bookmark, external-link, search, warning-amber) are reused unchanged from the sibling project's dictionary.

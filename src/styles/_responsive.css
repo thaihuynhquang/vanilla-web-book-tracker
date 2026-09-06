@@ -52,4 +52,25 @@
   .chapter-card-header {
     padding-bottom: var(--space-2xs);
   }
+
+  .pomodoro-modes {
+    width: 100%;
+  }
+
+  .pomodoro-mode-btn {
+    flex: 1;
+  }
+
+  .pomodoro-controls {
+    width: 100%;
+  }
+
+  .pomodoro-controls .btn {
+    flex: 1;
+  }
+
+  .pomodoro-presets {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }

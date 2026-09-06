@@ -64,13 +64,23 @@
   border: 1px solid transparent;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-xs);
-  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), color var(--transition-fast);
 }
 
 .btn svg {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-primary {
@@ -83,6 +93,10 @@
   box-shadow: 0 0 0 4px var(--primary-glow);
 }
 
+.btn-primary:active:not(:disabled) {
+  background: var(--primary-hover);
+}
+
 .btn-ghost {
   background: transparent;
   border-color: var(--border-color);
@@ -92,6 +106,10 @@
 .btn-ghost:hover {
   color: var(--text-primary);
   border-color: var(--border-color-strong);
+}
+
+.btn-ghost:active:not(:disabled) {
+  background: var(--surface-tint-strong);
 }
 
 .btn-outline {
@@ -119,6 +137,7 @@
 .btn,
 .chip,
 .nav-tab,
+.pomodoro-mode-btn,
 input[type="checkbox"] {
   outline-offset: 2px;
 }
@@ -127,9 +146,11 @@ input[type="checkbox"] {
 .btn:focus-visible,
 .chip:focus-visible,
 .nav-tab:focus-visible,
+.pomodoro-mode-btn:focus-visible,
 input[type="checkbox"]:focus-visible {
   outline: 2px solid var(--primary);
 }
+
 
 .chip {
   display: inline-flex;
@@ -141,12 +162,34 @@ input[type="checkbox"]:focus-visible {
   color: var(--text-secondary);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+button.chip:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color-strong);
+  color: var(--text-primary);
+}
+
+button.chip:active:not(:disabled) {
+  transform: scale(0.97);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+button.chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .chip--active {
   background: var(--primary);
   border-color: var(--primary);
+  color: #fff;
+}
+
+button.chip--active:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
   color: #fff;
 }
 
