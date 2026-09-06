@@ -113,7 +113,7 @@ export class BookViewChapters extends BookView {
             <span class="chapter-card-title">${escapeHtml(chapter.title)}</span>
           </div>
           <p class="chapter-tbd-notice">${t("chapters.tbd")}</p>
-          ${this.flashcardRowHtml(chapter, state)}
+          ${this.flashcardBlockHtml(chapter, state)}
           ${this.labBlockHtml(labByChapterId.get(chapter.id), glossaryById, state)}
         </div>
       `;
@@ -142,25 +142,31 @@ export class BookViewChapters extends BookView {
         <div class="chapter-card-body">
           ${chapter.summary ? `<div class="chapter-summary-box"><div class="chapter-summary-title">${t("chapters.summary.title")}</div><p>${escapeHtml(chapter.summary)}</p></div>` : ""}
           ${visibleSections.map((s) => this.sectionRowHtml(s, state)).join("") || `<p class="chapter-empty-filter">—</p>`}
-          ${this.flashcardRowHtml(chapter, state)}
+          ${this.flashcardBlockHtml(chapter, state)}
           ${this.labBlockHtml(labByChapterId.get(chapter.id), glossaryById, state)}
         </div>
       </div>
     `;
   }
 
-  private flashcardRowHtml(chapter: ChapterProgress["chapter"], state: ReturnType<typeof getState>): string {
+  private flashcardBlockHtml(chapter: ChapterProgress["chapter"], state: ReturnType<typeof getState>): string {
     const isFlashcardDone = !!state.flashcardDone[chapter.flashcardId];
 
     return `
-      <div class="flashcard-task-row">
-        ${icon("cards")}
-        <span class="flashcard-task-label">${t("chapters.flashcard.label")}</span>
-        <a href="${FLASHCARDS_GUIDE_URL}" target="_blank" rel="noopener noreferrer" class="flashcard-guide-link">${t("chapters.flashcard.guideLink")}</a>
-        <label class="lab-checkbox">
-          <input type="checkbox" data-flashcard-id="${escapeHtml(chapter.flashcardId)}" ${isFlashcardDone ? "checked" : ""}/>
-          ${t("chapters.flashcard.markDone")}
-        </label>
+      <div class="deliverable-card deliverable-card--flashcard">
+        <div class="deliverable-card-header">
+          ${icon("cards")}
+          <span class="deliverable-card-title">${t("chapters.flashcard.label")}</span>
+        </div>
+        <div class="deliverable-card-body">
+          <p><a href="${FLASHCARDS_GUIDE_URL}" target="_blank" rel="noopener noreferrer" class="flashcard-guide-link">${t("chapters.flashcard.guideLink")}</a></p>
+        </div>
+        <div class="deliverable-card-footer">
+          <label class="deliverable-checkbox">
+            <input type="checkbox" data-flashcard-id="${escapeHtml(chapter.flashcardId)}" ${isFlashcardDone ? "checked" : ""}/>
+            ${t("chapters.flashcard.markDone")}
+          </label>
+        </div>
       </div>
     `;
   }
@@ -171,12 +177,12 @@ export class BookViewChapters extends BookView {
 
     if (lab.tbd) {
       return `
-        <div class="lab-card">
-          <div class="lab-card-header">
+        <div class="deliverable-card deliverable-card--lab">
+          <div class="deliverable-card-header">
             ${icon("flask")}
-            <span class="lab-card-title">${t("chapters.lab.title")}</span>
+            <span class="deliverable-card-title">${t("chapters.lab.title")}</span>
           </div>
-          <div class="lab-card-body">
+          <div class="deliverable-card-body">
             <p class="lab-tbd-notice">${t("chapters.lab.tbd")}</p>
           </div>
         </div>
@@ -184,12 +190,12 @@ export class BookViewChapters extends BookView {
     }
 
     return `
-      <div class="lab-card">
-        <div class="lab-card-header">
+      <div class="deliverable-card deliverable-card--lab">
+        <div class="deliverable-card-header">
           ${icon("flask")}
-          <span class="lab-card-title">${escapeHtml(lab.title)}</span>
+          <span class="deliverable-card-title">${escapeHtml(lab.title)}</span>
         </div>
-        <div class="lab-card-body">
+        <div class="deliverable-card-body">
           <p class="lab-goal"><strong>${t("chapters.lab.goal")}:</strong> ${escapeHtml(lab.goal)}</p>
           <p class="lab-section-label">${t("chapters.lab.requirements")}</p>
           <ul class="lab-list">${lab.requirements.map((r) => `<li>${escapeHtml(r)}</li>`).join("")}</ul>
@@ -200,8 +206,8 @@ export class BookViewChapters extends BookView {
                <div class="chip-row">${lab.apisUsed.map((id) => `<span class="chip chip--api">${escapeHtml(glossaryById.get(id)?.name ?? id)}</span>`).join("")}</div>`
             : ""}
         </div>
-        <div class="lab-card-footer">
-          <label class="lab-checkbox">
+        <div class="deliverable-card-footer">
+          <label class="deliverable-checkbox">
             <input type="checkbox" data-lab-id="${escapeHtml(lab.id)}" ${isLabDone ? "checked" : ""}/>
             ${t("chapters.lab.markDone")}
           </label>

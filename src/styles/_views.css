@@ -213,41 +213,20 @@
   padding: var(--space-xs) 0;
 }
 
-/* Chapter card: flashcard + lab deliverables */
-.flashcard-task-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-md);
-  margin-top: var(--space-md);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  background: var(--bg-card-hover);
-  flex-wrap: wrap;
-}
-
-.flashcard-task-row svg {
-  color: var(--accent-purple);
-}
-
-.flashcard-task-label {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  flex: 1;
-}
-
-.flashcard-guide-link {
-  font-size: var(--font-size-xs);
-}
-
-.lab-card {
+/* Chapter card: flashcard + lab deliverables (shared card shell) */
+.deliverable-card {
+  --deliverable-accent: var(--primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   margin-top: var(--space-md);
   overflow: hidden;
 }
 
-.lab-card-header {
+.deliverable-card--flashcard {
+  --deliverable-accent: var(--accent-purple);
+}
+
+.deliverable-card-header {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -257,12 +236,37 @@
   font-weight: var(--font-weight-bold);
 }
 
-.lab-card-title {
+.deliverable-card-header svg {
+  color: var(--deliverable-accent);
+}
+
+.deliverable-card-title {
   font-size: var(--font-size-base);
 }
 
-.lab-card-body {
+.deliverable-card-body {
   padding: var(--space-sm) var(--space-md);
+}
+
+.deliverable-card-footer {
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.deliverable-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-md);
+}
+
+.deliverable-checkbox input {
+  accent-color: var(--deliverable-accent);
+}
+
+.flashcard-guide-link {
+  font-size: var(--font-size-xs);
 }
 
 .lab-goal {
@@ -281,19 +285,6 @@
   margin-top: var(--space-2xs);
   font-size: var(--font-size-md);
   color: var(--text-secondary);
-}
-
-.lab-card-footer {
-  padding: var(--space-sm) var(--space-md);
-  border-top: 1px solid var(--border-color);
-}
-
-.lab-checkbox {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-md);
 }
 
 .lab-tbd-notice {
