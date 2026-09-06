@@ -34,6 +34,13 @@ export interface Lab {
   tbd: boolean;
 }
 
+export interface LabContent {
+  title: string;
+  goal: string;
+  requirements: string[];
+  acceptanceCriteria: string[];
+}
+
 export interface FlashcardTask {
   id: string;
   chapterId: string;
@@ -61,6 +68,11 @@ export interface Resource {
 export interface QuitCriteriaRow {
   id: string;
   chapterId: string;
+  stopSignal: string;
+  exitCriteria: string;
+}
+
+export interface QuitCriteriaText {
   stopSignal: string;
   exitCriteria: string;
 }

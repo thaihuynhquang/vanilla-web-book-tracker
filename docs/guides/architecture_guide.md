@@ -54,7 +54,7 @@ Full directory tree and file responsibilities: **[project_structure.md](./projec
 ## 4. Core Design Patterns & Architecture Principles
 
 ### Pattern 1: Data-Driven UI Architecture
-- **Principle**: 100% of book content lives in `src/data/bookData.vi.ts` / `bookData.en.ts`, read through the `src/data/bookData.ts` facade (`getChapters()`, `getMetaData()`, `getLabs()`, `getGlossary()`, `getResources()`, `getQuitCriteriaData()`) rather than imported directly, so a language switch repaints with the correct bundle.
+- **Principle**: 100% of book content lives under `src/data/`, read through the `src/data/bookData.ts` facade (`getChapters()`, `getMetaData()`, `getLabs()`, `getGlossary()`, `getResources()`, `getQuitCriteriaData()`) rather than imported directly, so a language switch repaints with the correct bundle.
 - **Primary Key Constraint**: every Chapter, Section, Lab, FlashcardTask, GlossaryTerm, Resource, and QuitCriteriaRow **MUST** have a unique static `id` (see **[book_data_model_guide.md](./book_data_model_guide.md)** section 4), identical across both language files.
 - **Critical Warning for AI Agents**: never rename or reassign an existing item `id` — it is the primary key for completion state in `localStorage`. When adding or editing content, edit both `bookData.vi.ts` and `bookData.en.ts` together; a dev-only check in `bookData.ts` must log a console error if their id sets ever diverge.
 

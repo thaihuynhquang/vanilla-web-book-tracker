@@ -13,11 +13,13 @@ Following the pattern of `planData.vi.ts` / `planData.en.ts` / `planData.ts` in 
 
 - `src/data/shared/*.ts` — `sections.ts`, `chapterMeta.ts`, `labMeta.ts`, `flashcards.ts`, `resources.ts`. Ids, nums, and every field that must not vary by language. Edit these once; both bundles pick it up.
 - `src/data/glossary/vi.ts` / `en.ts` — full per-locale `GlossaryTerm[]` arrays. `id`, `name`, `chapterIds`, `mdnUrl`, `specUrl` are duplicated identically across both files; only `description` differs by language.
-- `src/data/bookData.vi.ts` — Vietnamese-only prose (chapter summaries, lab titles/goals/requirements/acceptance criteria, quit-criteria text) composed together with `shared/` into `Chapter[]` / `Lab[]` / `QuitCriteriaRow[]`; also re-exports `GLOSSARY_VI` via `getGlossaryVi()`.
+- `src/data/labs/vi.ts` / `en.ts` — per-locale `Record<labId, LabContent>` (`title`/`goal`/`requirements`/`acceptanceCriteria`) — prose only. Composed with `shared/labMeta.ts` (`chapterId`/`apisUsed`/`tbd`) in `bookData.vi.ts`/`bookData.en.ts` into `Lab[]`.
+- `src/data/quitCriteria/vi.ts` / `en.ts` — per-locale `Record<chapterId, QuitCriteriaText>` (`stopSignal`/`exitCriteria`) — prose only. `id` (`qc-${chapterId}`) and `chapterId` are still derived from `CHAPTER_META` in `bookData.vi.ts`/`bookData.en.ts`, keeping id parity structural.
+- `src/data/bookData.vi.ts` — Vietnamese-only chapter summaries, composed together with `shared/`, `labs/vi.ts`, and `quitCriteria/vi.ts` into `Chapter[]` / `Lab[]` / `QuitCriteriaRow[]`; also re-exports `GLOSSARY_VI` via `getGlossaryVi()`.
 - `src/data/bookData.en.ts` — English translations of the same prose, composed the same way — **identical id set and shape** as the Vietnamese file; also re-exports `GLOSSARY_EN` via `getGlossaryEn()`.
 - `src/data/bookData.ts` — thin facade, picks a bundle by `state.lang` and exposes `getChapters()`, `getMetaData()`, `getLabs()`, `getGlossary()`, `getResources()`, `getQuitCriteriaData()`.
 
-`Resource` records still live in `shared/` as single objects (not per-locale) because `title` there is a proper name/link title, not prose to translate, so `getResourcesVi()`/`getResourcesEn()` return the same array. `GlossaryTerm` records are per-locale (see above) since `description` is prose.
+`Resource` records still live in `shared/` as single objects (not per-locale) because `title` there is a proper name/link title, not prose to translate, so `getResourcesVi()`/`getResourcesEn()` return the same array. `GlossaryTerm` records are per-locale (see above) since `description` is prose. `Lab` and `QuitCriteriaRow` are split: language-independent fields stay in `shared/` (or are derived from `CHAPTER_META`), prose fields are per-locale under `labs/` and `quitCriteria/`.
 
 **Never rename or reassign an existing id.** Ids are the primary key for completion state persisted in `localStorage`. A dev-only check in `bookData.ts` logs a `console.error` if the id sets of the vi/en files ever diverge — for chapters, labs, quit-criteria, and glossary — and if the chapter/section/lab/flashcard counts in §6 below don't match what `shared/` actually contains.
 

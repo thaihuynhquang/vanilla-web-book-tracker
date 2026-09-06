@@ -33,11 +33,17 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   │   └── backup.ts               # JSON export/import & progress reset handlers
 │   ├── data/
 │   │   ├── bookData.ts             # Facade: getChapters()/getMetaData()/getLabs()/getGlossary()/getResources()/getQuitCriteriaData(); dev-only id-set and content-count assertions
-│   │   ├── bookData.vi.ts          # Vietnamese chapter summaries, lab content, quit-criteria prose; composes shared/ into Chapter[]/Lab[]/QuitCriteriaRow[]
+│   │   ├── bookData.vi.ts          # Vietnamese chapter summaries; composes shared/ + labs/ + quitCriteria/ into Chapter[]/Lab[]/QuitCriteriaRow[]
 │   │   ├── bookData.en.ts          # English translations of the same prose - same ids/shape as bookData.vi.ts
 │   │   ├── glossary/               # Per-locale glossary data - description is the only field that differs
 │   │   │   ├── vi.ts               # GLOSSARY_VI: 60 GlossaryTerm objects, Vietnamese description
 │   │   │   └── en.ts               # GLOSSARY_EN: 60 GlossaryTerm objects, same ids/names/urls, English description
+│   │   ├── labs/                   # Per-locale lab prose - composed with shared/labMeta.ts for chapterId/apisUsed/tbd
+│   │   │   ├── vi.ts               # LAB_CONTENT_VI: Record<labId, LabContent> - title/goal/requirements/acceptanceCriteria
+│   │   │   └── en.ts               # LAB_CONTENT_EN: same keys, English prose
+│   │   ├── quitCriteria/           # Per-locale quit-criteria prose - id/chapterId still derived from CHAPTER_META in bookData.*.ts
+│   │   │   ├── vi.ts               # QUIT_CRITERIA_VI: Record<chapterId, QuitCriteriaText> - stopSignal/exitCriteria
+│   │   │   └── en.ts               # QUIT_CRITERIA_EN: same keys, English prose
 │   │   └── shared/                 # Language-independent structure - the single source of id parity between vi/en
 │   │       ├── sections.ts         # SECTIONS_BY_CHAPTER: 95 Section objects (ids, nums, subsections, estMinutes)
 │   │       ├── chapterMeta.ts      # CHAPTER_META: chapter id/num/title/tbd/labId/flashcardId/glossaryRefs
