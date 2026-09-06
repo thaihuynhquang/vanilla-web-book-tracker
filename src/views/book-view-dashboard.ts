@@ -3,6 +3,7 @@ import { getState, toggleRead, toggleHandsOn, addPomodoroSession, removePomodoro
 import { renderAll } from "../renderer";
 import { t } from "../i18n";
 import { icon } from "../utils/icons";
+import { escapeHtml } from "../utils/html";
 import { playChime } from "../utils/audio";
 import { requestNotificationPermission, showNotification } from "../utils/notification";
 import { BookView } from "./base";
@@ -242,10 +243,10 @@ export class BookViewDashboard extends BookView {
       if (stats.activeChapter && stats.nextSection) {
         nextSectionEl.innerHTML = `
           <h3>${t("dashboard.nextSection.title")}</h3>
-          <p class="next-chapter-title">${t("common.chapter")} ${stats.activeChapter.num} — ${stats.activeChapter.title}</p>
+          <p class="next-chapter-title">${t("common.chapter")} ${escapeHtml(String(stats.activeChapter.num))} — ${escapeHtml(stats.activeChapter.title)}</p>
           <p class="next-section-label">${t("dashboard.nextSection.next")}</p>
-          <p class="next-section-title">${stats.nextSection.num} ${stats.nextSection.title}</p>
-          <button type="button" class="btn btn-primary" data-section-id="${stats.nextSection.id}">
+          <p class="next-section-title">${escapeHtml(stats.nextSection.num)} ${escapeHtml(stats.nextSection.title)}</p>
+          <button type="button" class="btn btn-primary" data-section-id="${escapeHtml(stats.nextSection.id)}">
             ${t("dashboard.nextSection.markRead")}
           </button>
         `;
@@ -258,12 +259,12 @@ export class BookViewDashboard extends BookView {
         const pendingSection = stats.activeChapter.sections.find((s) => !state.handsOn[s.id]) ?? null;
         nextSectionEl.innerHTML = `
           <h3>${t("dashboard.nextSection.title")}</h3>
-          <p class="next-chapter-title">${t("common.chapter")} ${stats.activeChapter.num} — ${stats.activeChapter.title}</p>
+          <p class="next-chapter-title">${t("common.chapter")} ${escapeHtml(String(stats.activeChapter.num))} — ${escapeHtml(stats.activeChapter.title)}</p>
           <p class="next-section-label">${t("dashboard.nextSection.handsonNext")}</p>
           ${pendingSection
             ? `
-              <p class="next-section-title">${pendingSection.num} ${pendingSection.title}</p>
-              <button type="button" class="btn btn-primary" data-handson-id="${pendingSection.id}">
+              <p class="next-section-title">${escapeHtml(pendingSection.num)} ${escapeHtml(pendingSection.title)}</p>
+              <button type="button" class="btn btn-primary" data-handson-id="${escapeHtml(pendingSection.id)}">
                 ${t("dashboard.nextSection.markHandson")}
               </button>
             `

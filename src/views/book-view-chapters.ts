@@ -3,6 +3,7 @@ import { getState, toggleRead, toggleHandsOn } from "../state/storage";
 import { renderAll } from "../renderer";
 import { t } from "../i18n";
 import { icon } from "../utils/icons";
+import { escapeHtml } from "../utils/html";
 import type { Chapter, Section } from "../types/appState";
 import { BookView } from "./base";
 
@@ -70,8 +71,8 @@ export class BookViewChapters extends BookView {
       return `
         <div class="chapter-card chapter-card--tbd">
           <div class="chapter-card-header">
-            <span class="chapter-number-badge">${chapter.num}</span>
-            <span class="chapter-card-title">${chapter.title}</span>
+            <span class="chapter-number-badge">${escapeHtml(String(chapter.num))}</span>
+            <span class="chapter-card-title">${escapeHtml(chapter.title)}</span>
           </div>
           <p class="chapter-tbd-notice">${t("chapters.tbd")}</p>
         </div>
@@ -84,9 +85,9 @@ export class BookViewChapters extends BookView {
 
     return `
       <div class="chapter-card ${isExpanded ? "chapter-card--expanded" : ""}">
-        <button type="button" class="chapter-card-header" data-chapter-toggle="${chapter.id}" aria-expanded="${isExpanded}">
-          <span class="chapter-number-badge">${chapter.num}</span>
-          <span class="chapter-card-title">${chapter.title}</span>
+        <button type="button" class="chapter-card-header" data-chapter-toggle="${escapeHtml(chapter.id)}" aria-expanded="${isExpanded}">
+          <span class="chapter-number-badge">${escapeHtml(String(chapter.num))}</span>
+          <span class="chapter-card-title">${escapeHtml(chapter.title)}</span>
           <svg class="chapter-ring" viewBox="0 0 32 32">
             <circle cx="16" cy="16" r="${RING_RADIUS}" class="chapter-ring-track"/>
             <circle cx="16" cy="16" r="${RING_RADIUS}" class="chapter-ring-progress"
@@ -114,24 +115,24 @@ export class BookViewChapters extends BookView {
     return `
       <div class="section-row">
         <div class="section-row-main">
-          <span class="section-num">${section.num}</span>
-          <span class="section-title">${section.title}</span>
+          <span class="section-num">${escapeHtml(section.num)}</span>
+          <span class="section-title">${escapeHtml(section.title)}</span>
           <span class="section-badge ${badge.cls}">${badge.text}</span>
         </div>
         <div class="section-row-checks">
           <label class="section-check">
             ${icon("bookOpen")}
-            <input type="checkbox" data-read-id="${section.id}" ${isRead ? "checked" : ""}/>
+            <input type="checkbox" data-read-id="${escapeHtml(section.id)}" ${isRead ? "checked" : ""}/>
             <span>${t("chapters.section.read")}</span>
           </label>
           <label class="section-check">
             ${icon("flask")}
-            <input type="checkbox" data-handson-id="${section.id}" ${isHandsOn ? "checked" : ""}/>
+            <input type="checkbox" data-handson-id="${escapeHtml(section.id)}" ${isHandsOn ? "checked" : ""}/>
             <span>${t("chapters.section.handson")}</span>
           </label>
         </div>
         ${section.subsections.length > 0
-          ? `<ul class="subsection-list">${section.subsections.map((sub) => `<li>${sub.num} ${sub.title}</li>`).join("")}</ul>`
+          ? `<ul class="subsection-list">${section.subsections.map((sub) => `<li>${escapeHtml(sub.num)} ${escapeHtml(sub.title)}</li>`).join("")}</ul>`
           : ""}
       </div>
     `;

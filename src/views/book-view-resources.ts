@@ -3,6 +3,7 @@ import { getState, toggleResourceFlag } from "../state/storage";
 import { renderAll } from "../renderer";
 import { t } from "../i18n";
 import { icon } from "../utils/icons";
+import { escapeHtml } from "../utils/html";
 import type { Resource } from "../types/appState";
 import { BookView } from "./base";
 import { chapterFilterChipsHtml } from "./helpers";
@@ -50,13 +51,13 @@ export class BookViewResources extends BookView {
     const isBookmarked = !!state.resourceFlags[resource.id];
     return `
       <div class="resource-card">
-        <span class="chip chip--type chip--type-${resource.type}">${resource.type}</span>
-        <h3 class="resource-title">${resource.title}</h3>
+        <span class="chip chip--type chip--type-${escapeHtml(resource.type)}">${escapeHtml(resource.type)}</span>
+        <h3 class="resource-title">${escapeHtml(resource.title)}</h3>
         <div class="resource-actions">
-          <button type="button" class="icon-btn" data-bookmark-id="${resource.id}" aria-pressed="${isBookmarked}">
+          <button type="button" class="icon-btn" data-bookmark-id="${escapeHtml(resource.id)}" aria-pressed="${isBookmarked}">
             ${icon(isBookmarked ? "starFilled" : "starOutline")}
           </button>
-          <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+          <a href="${escapeHtml(resource.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
             ${icon("externalLink")} ${t("resources.open")}
           </a>
         </div>
