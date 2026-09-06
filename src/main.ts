@@ -29,7 +29,6 @@ function renderNavTabIcons(): void {
     dashboard: icon("dashboard"),
     chapters: icon("book"),
     pomodoro: icon("pomodoro"),
-    labs: icon("cards"),
     glossary: icon("glossary"),
     resources: icon("externalLink"),
     quitcriteria: icon("shieldAlert"),

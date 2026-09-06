@@ -15,7 +15,7 @@
 2. Copy nội dung chương (ảnh chụp trang sách, ghi chú tay, hoặc bản tóm tắt bạn tự viết) vào **NotebookLM** như 1 nguồn, hoặc dán trực tiếp vào **Gemini** (gemini.google.com) nếu chỉ cần nhanh.
 3. Dùng prompt mẫu bên dưới để sinh bộ thẻ.
 4. Ôn thử ngay tại chỗ (NotebookLM có chế độ Flashcards có sẵn; Gemini thì đọc qua và tự hỏi-đáp).
-5. Tick `fc-ch-{n}` trong tab **Labs & Flashcards** của tracker.
+5. Tick `fc-ch-{n}` ở cuối chương tương ứng trong tab **Chapters** của tracker.
 
 ## 3. Prompt mẫu (song ngữ)
 

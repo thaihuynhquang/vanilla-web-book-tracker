@@ -1,9 +1,8 @@
 import type { AppState } from "../types/appState";
-import { getState, replaceState } from "../state/storage";
+import { getState, normalizeActiveTab, replaceState } from "../state/storage";
 import { renderAll } from "../renderer";
 import { showToast } from "../toast";
 import { t } from "../i18n";
-import { ROUTE_IDS } from "../constants";
 
 function isFinitePositiveNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value > 0;
@@ -27,7 +26,6 @@ function isValidAppState(value: unknown): value is AppState {
   ) {
     return false;
   }
-  if (!(ROUTE_IDS as string[]).includes(v.activeTab)) return false;
   if (v.theme !== "dark" && v.theme !== "light") return false;
   if (v.lang !== "vi" && v.lang !== "en") return false;
 
@@ -59,6 +57,7 @@ export function importState(file: File): void {
     try {
       const parsed = JSON.parse(String(reader.result));
       if (!isValidAppState(parsed)) throw new Error("Invalid AppState shape");
+      parsed.activeTab = normalizeActiveTab(parsed.activeTab, "dashboard");
       replaceState(parsed);
       document.documentElement.setAttribute("data-theme", parsed.theme);
       renderAll();

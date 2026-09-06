@@ -4,9 +4,14 @@ import {
   DEFAULT_POMODORO_LONG_BREAK_MINUTES,
   DEFAULT_POMODORO_WORK_MINUTES,
   LANG_KEY,
+  ROUTE_IDS,
   STORAGE_KEY,
   THEME_KEY,
 } from "../constants";
+
+export function normalizeActiveTab(tab: unknown, fallback: RouteId): RouteId {
+  return ROUTE_IDS.includes(tab as RouteId) ? (tab as RouteId) : fallback;
+}
 
 function defaultState(): AppState {
   return {
@@ -55,7 +60,7 @@ export function loadState(): AppState {
       labDone: parsed.labDone ?? fallback.labDone,
       flashcardDone: parsed.flashcardDone ?? fallback.flashcardDone,
       resourceFlags: parsed.resourceFlags ?? fallback.resourceFlags,
-      activeTab: parsed.activeTab ?? fallback.activeTab,
+      activeTab: normalizeActiveTab(parsed.activeTab, fallback.activeTab),
       theme: parsed.theme ?? detectPreferredTheme(),
       lang: parsed.lang ?? detectPreferredLang(),
       pomodoroSettings: { ...fallback.pomodoroSettings, ...parsed.pomodoroSettings },
@@ -81,7 +86,11 @@ export function getState(): AppState {
 }
 
 export function replaceState(next: AppState): void {
-  state = { ...next, pomodoroSettings: { ...defaultState().pomodoroSettings, ...next.pomodoroSettings } };
+  state = {
+    ...next,
+    activeTab: normalizeActiveTab(next.activeTab, "dashboard"),
+    pomodoroSettings: { ...defaultState().pomodoroSettings, ...next.pomodoroSettings },
+  };
   saveState();
 }
 

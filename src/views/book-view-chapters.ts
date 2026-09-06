@@ -1,12 +1,13 @@
-import { getChapters } from "../data/bookData";
-import { getState, toggleRead, toggleHandsOn } from "../state/storage";
+import { getChapters, getLabs, getGlossary } from "../data/bookData";
+import { getState, toggleRead, toggleHandsOn, toggleLabDone, toggleFlashcardDone } from "../state/storage";
 import { calculateProgress, type ChapterProgress } from "../progress";
 import { renderAll } from "../renderer";
 import { t } from "../i18n";
 import { icon } from "../utils/icons";
 import { escapeHtml } from "../utils/html";
 import { chapterFilterChipsHtml } from "./helpers";
-import type { Section } from "../types/appState";
+import { FLASHCARDS_GUIDE_URL } from "../constants";
+import type { Section, Lab } from "../types/appState";
 import { BookView } from "./base";
 
 export class BookViewChapters extends BookView {
@@ -17,9 +18,13 @@ export class BookViewChapters extends BookView {
     const chapters = getChapters();
     const state = getState();
     const stats = calculateProgress();
+    const labByChapterId = new Map(getLabs().map((l) => [l.chapterId, l]));
+    const glossaryById = new Map(getGlossary().map((g) => [g.id, g]));
     const focusedInput = document.activeElement as HTMLElement | null;
     const focusedReadId = focusedInput?.dataset.readId ?? null;
     const focusedHandsonId = focusedInput?.dataset.handsonId ?? null;
+    const focusedLabId = focusedInput?.dataset.labId ?? null;
+    const focusedFlashcardId = focusedInput?.dataset.flashcardId ?? null;
 
     const visibleChapters = this.selectedChapterId
       ? chapters.filter((c) => c.id === this.selectedChapterId)
@@ -38,7 +43,7 @@ export class BookViewChapters extends BookView {
       </section>
       ${chapterFilterChipsHtml(chapters, this.selectedChapterId, t("chapters.filter.allChapters"))}
       <div class="chapter-accordion">
-        ${visibleChapters.map((c) => this.chapterCardHtml(c, stats.chapterProgresses.find((cp) => cp.chapter.id === c.id)!, state)).join("")}
+        ${visibleChapters.map((c) => this.chapterCardHtml(c, stats.chapterProgresses.find((cp) => cp.chapter.id === c.id)!, state, labByChapterId, glossaryById)).join("")}
       </div>
     `;
 
@@ -68,14 +73,38 @@ export class BookViewChapters extends BookView {
       });
     });
 
+    this.querySelectorAll<HTMLInputElement>("[data-lab-id]").forEach((input) => {
+      input.addEventListener("change", () => {
+        toggleLabDone(input.dataset.labId!);
+        renderAll();
+      });
+    });
+
+    this.querySelectorAll<HTMLInputElement>("[data-flashcard-id]").forEach((input) => {
+      input.addEventListener("change", () => {
+        toggleFlashcardDone(input.dataset.flashcardId!);
+        renderAll();
+      });
+    });
+
     if (focusedReadId) {
       this.querySelector<HTMLInputElement>(`[data-read-id="${CSS.escape(focusedReadId)}"]`)?.focus();
     } else if (focusedHandsonId) {
       this.querySelector<HTMLInputElement>(`[data-handson-id="${CSS.escape(focusedHandsonId)}"]`)?.focus();
+    } else if (focusedLabId) {
+      this.querySelector<HTMLInputElement>(`[data-lab-id="${CSS.escape(focusedLabId)}"]`)?.focus();
+    } else if (focusedFlashcardId) {
+      this.querySelector<HTMLInputElement>(`[data-flashcard-id="${CSS.escape(focusedFlashcardId)}"]`)?.focus();
     }
   }
 
-  private chapterCardHtml(chapter: ChapterProgress["chapter"], progress: ChapterProgress, state: ReturnType<typeof getState>): string {
+  private chapterCardHtml(
+    chapter: ChapterProgress["chapter"],
+    progress: ChapterProgress,
+    state: ReturnType<typeof getState>,
+    labByChapterId: Map<string, Lab>,
+    glossaryById: Map<string, { id: string; name: string }>,
+  ): string {
     if (chapter.tbd) {
       return `
         <div class="chapter-card chapter-card--tbd">
@@ -84,6 +113,8 @@ export class BookViewChapters extends BookView {
             <span class="chapter-card-title">${escapeHtml(chapter.title)}</span>
           </div>
           <p class="chapter-tbd-notice">${t("chapters.tbd")}</p>
+          ${this.flashcardRowHtml(chapter, state)}
+          ${this.labBlockHtml(labByChapterId.get(chapter.id), glossaryById, state)}
         </div>
       `;
     }
@@ -111,6 +142,69 @@ export class BookViewChapters extends BookView {
         <div class="chapter-card-body">
           ${chapter.summary ? `<div class="chapter-summary-box"><div class="chapter-summary-title">${t("chapters.summary.title")}</div><p>${escapeHtml(chapter.summary)}</p></div>` : ""}
           ${visibleSections.map((s) => this.sectionRowHtml(s, state)).join("") || `<p class="chapter-empty-filter">—</p>`}
+          ${this.flashcardRowHtml(chapter, state)}
+          ${this.labBlockHtml(labByChapterId.get(chapter.id), glossaryById, state)}
+        </div>
+      </div>
+    `;
+  }
+
+  private flashcardRowHtml(chapter: ChapterProgress["chapter"], state: ReturnType<typeof getState>): string {
+    const isFlashcardDone = !!state.flashcardDone[chapter.flashcardId];
+
+    return `
+      <div class="flashcard-task-row">
+        ${icon("cards")}
+        <span class="flashcard-task-label">${t("chapters.flashcard.label")}</span>
+        <a href="${FLASHCARDS_GUIDE_URL}" target="_blank" rel="noopener noreferrer" class="flashcard-guide-link">${t("chapters.flashcard.guideLink")}</a>
+        <label class="lab-checkbox">
+          <input type="checkbox" data-flashcard-id="${escapeHtml(chapter.flashcardId)}" ${isFlashcardDone ? "checked" : ""}/>
+          ${t("chapters.flashcard.markDone")}
+        </label>
+      </div>
+    `;
+  }
+
+  private labBlockHtml(lab: Lab | undefined, glossaryById: Map<string, { id: string; name: string }>, state: ReturnType<typeof getState>): string {
+    if (!lab) return "";
+    const isLabDone = !!state.labDone[lab.id];
+
+    if (lab.tbd) {
+      return `
+        <div class="lab-card">
+          <div class="lab-card-header">
+            ${icon("flask")}
+            <span class="lab-card-title">${t("chapters.lab.title")}</span>
+          </div>
+          <div class="lab-card-body">
+            <p class="lab-tbd-notice">${t("chapters.lab.tbd")}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="lab-card">
+        <div class="lab-card-header">
+          ${icon("flask")}
+          <span class="lab-card-title">${escapeHtml(lab.title)}</span>
+        </div>
+        <div class="lab-card-body">
+          <p class="lab-goal"><strong>${t("chapters.lab.goal")}:</strong> ${escapeHtml(lab.goal)}</p>
+          <p class="lab-section-label">${t("chapters.lab.requirements")}</p>
+          <ul class="lab-list">${lab.requirements.map((r) => `<li>${escapeHtml(r)}</li>`).join("")}</ul>
+          <p class="lab-section-label">${t("chapters.lab.acceptanceCriteria")}</p>
+          <ul class="lab-list lab-list--criteria">${lab.acceptanceCriteria.map((a) => `<li>${escapeHtml(a)}</li>`).join("")}</ul>
+          ${lab.apisUsed.length > 0
+            ? `<p class="lab-section-label">${t("chapters.lab.apisUsed")}</p>
+               <div class="chip-row">${lab.apisUsed.map((id) => `<span class="chip chip--api">${escapeHtml(glossaryById.get(id)?.name ?? id)}</span>`).join("")}</div>`
+            : ""}
+        </div>
+        <div class="lab-card-footer">
+          <label class="lab-checkbox">
+            <input type="checkbox" data-lab-id="${escapeHtml(lab.id)}" ${isLabDone ? "checked" : ""}/>
+            ${t("chapters.lab.markDone")}
+          </label>
         </div>
       </div>
     `;

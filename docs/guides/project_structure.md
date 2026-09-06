@@ -78,9 +78,8 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   │   ├── helpers.ts                # chapterFilterChipsHtml(), searchHeaderHtml()/bindSearch() - shared chip-filter and search-input markup, binds without losing focus/caret
 │   │   ├── index.ts                  # registers all <book-view-*> custom elements
 │   │   ├── book-view-dashboard.ts    # <book-view-dashboard> - metric tiles, progress overview, next-focus card, per-chapter progress list
-│   │   ├── book-view-chapters.ts     # <book-view-chapters> - 15 always-expanded chapter cards, section checklists, chapter filter chips
+│   │   ├── book-view-chapters.ts     # <book-view-chapters> - 15 always-expanded chapter cards, section checklists, chapter filter chips, per-chapter flashcard row + lab card
 │   │   ├── book-view-pomodoro.ts     # <book-view-pomodoro> - standalone Pomodoro timer tab (mode/ring/presets/history)
-│   │   ├── book-view-labs.ts         # <book-view-labs> - 15 labs + 15 flashcard tasks
 │   │   ├── book-view-glossary.ts     # <book-view-glossary> - searchable Web API glossary
 │   │   ├── book-view-resources.ts    # <book-view-resources> - resource catalog with bookmarks
 │   │   └── book-view-quitcriteria.ts # <book-view-quitcriteria> - stop-signal/exit-criteria matrix

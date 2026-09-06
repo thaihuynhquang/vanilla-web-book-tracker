@@ -8,7 +8,6 @@ export const ROUTE_IDS: RouteId[] = [
   "dashboard",
   "chapters",
   "pomodoro",
-  "labs",
   "glossary",
   "resources",
   "quitcriteria",

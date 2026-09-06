@@ -213,31 +213,47 @@
   padding: var(--space-xs) 0;
 }
 
-/* Labs */
-.labs-list {
+/* Chapter card: flashcard + lab deliverables */
+.flashcard-task-row {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  margin-top: var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-card-hover);
+  flex-wrap: wrap;
+}
+
+.flashcard-task-row svg {
+  color: var(--accent-purple);
+}
+
+.flashcard-task-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.flashcard-guide-link {
+  font-size: var(--font-size-xs);
 }
 
 .lab-card {
-  background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-md);
   overflow: hidden;
-}
-
-.lab-card--tbd {
-  opacity: 0.6;
-  padding: var(--space-lg);
 }
 
 .lab-card-header {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
   border-bottom: 1px solid var(--border-color);
+  background: var(--bg-card-hover);
   font-weight: var(--font-weight-bold);
 }
 
@@ -246,7 +262,7 @@
 }
 
 .lab-card-body {
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
 }
 
 .lab-goal {
@@ -268,7 +284,7 @@
 }
 
 .lab-card-footer {
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
   border-top: 1px solid var(--border-color);
 }
 
@@ -283,31 +299,6 @@
 .lab-tbd-notice {
   color: var(--text-muted);
   font-size: var(--font-size-sm);
-  margin-top: var(--space-xs);
-}
-
-.flashcard-task-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-lg);
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-card-hover);
-  flex-wrap: wrap;
-}
-
-.flashcard-task-row svg {
-  color: var(--accent-purple);
-}
-
-.flashcard-task-label {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  flex: 1;
-}
-
-.flashcard-guide-link {
-  font-size: var(--font-size-xs);
 }
 
 /* Glossary */

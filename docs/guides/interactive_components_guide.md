@@ -119,18 +119,21 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 
 ---
 
-## 5. Labs & Flashcards View Specifications (PRD-04)
+## 5. Chapter Deliverables Specifications (PRD-04)
+
+Both deliverables below render at the end of each chapter card in `Chapters View Component`
+(`<book-view-chapters>`), after the section checklist — there is no separate Labs tab.
 
 ### 5.1. Lab Checklist
 - **User Story**: As a reader, I want to track which chapter labs I've actually built.
-- **UI Component**: `Labs View Component` (`<book-view-labs>`), one `.lab-card` per chapter.
+- **UI Component**: `Chapters View Component`, one `.lab-card` per chapter.
 - **Flow**: card shows goal, requirements, acceptance criteria bullets, APIs used (linked to Glossary); a single "Mark lab complete" checkbox bound to `data-lab-id` calls `toggleLabDone(labId)`. `tbd` chapters show a "lab not yet defined" placeholder.
 - **AC**:
   - [ ] Checking a lab contributes to the 20%-weight chapter-deliverables axis.
 
 ### 5.2. Flashcard Task Checklist
 - **User Story**: As a reader, I want one checkbox per chapter confirming "I generated and reviewed my flashcard deck," without the app needing to store the deck itself.
-- **UI Component**: `Labs View Component` (`.flashcard-task-row`, one per chapter, linked from `docs/content/flashcards_guide.md`).
+- **UI Component**: `Chapters View Component` (`.flashcard-task-row`, one per chapter, linked from `docs/content/flashcards_guide.md`).
 - **Flow**: single checkbox bound to `data-flashcard-id` calls `toggleFlashcardDone(flashcardId)`.
 - **AC**:
   - [ ] This is intentionally the only flashcard state the app stores — no spaced-repetition scheduling, no card content in `localStorage`.
