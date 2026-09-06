@@ -48,19 +48,19 @@ export class BookViewPomodoro extends BookView {
               <button type="button" class="btn btn-ghost" id="pomo-reset">${icon("rotateCcw")}<span data-i18n="pomodoro.reset">${t("pomodoro.reset")}</span></button>
             </div>
             <div class="pomodoro-presets">
-              <button type="button" class="chip" data-pomo-preset="25-5" aria-pressed="false" data-i18n="pomodoro.preset.2505">${t("pomodoro.preset.2505")}</button>
-              <button type="button" class="chip" data-pomo-preset="50-5" aria-pressed="false" data-i18n="pomodoro.preset.5005">${t("pomodoro.preset.5005")}</button>
-              <button type="button" class="chip" id="pomo-preset-custom" aria-expanded="false" data-i18n="pomodoro.preset.custom">${t("pomodoro.preset.custom")}</button>
+              <button type="button" class="pomodoro-preset-btn" data-pomo-preset="25-5" aria-pressed="false" data-i18n="pomodoro.preset.2505">${t("pomodoro.preset.2505")}</button>
+              <button type="button" class="pomodoro-preset-btn" data-pomo-preset="50-5" aria-pressed="false" data-i18n="pomodoro.preset.5005">${t("pomodoro.preset.5005")}</button>
+              <button type="button" class="pomodoro-preset-btn" id="pomo-preset-custom" aria-expanded="false" data-i18n="pomodoro.preset.custom">${t("pomodoro.preset.custom")}</button>
             </div>
             <div class="pomodoro-custom-form" id="pomo-custom-form" hidden>
-              <label>
-                <span data-i18n="pomodoro.custom.work">${t("pomodoro.custom.work")}</span>
-                <input type="number" min="1" id="pomo-custom-work" value="${getState().pomodoroSettings.workMinutes}"/>
-              </label>
-              <label>
-                <span data-i18n="pomodoro.custom.break">${t("pomodoro.custom.break")}</span>
-                <input type="number" min="1" id="pomo-custom-break" value="${getState().pomodoroSettings.breakMinutes}"/>
-              </label>
+              <div class="pomodoro-custom-group">
+                <label for="pomo-custom-work" data-i18n="pomodoro.custom.work">${t("pomodoro.custom.work")}</label>
+                <input type="number" min="1" id="pomo-custom-work" class="pomodoro-custom-input" value="${getState().pomodoroSettings.workMinutes}"/>
+              </div>
+              <div class="pomodoro-custom-group">
+                <label for="pomo-custom-break" data-i18n="pomodoro.custom.break">${t("pomodoro.custom.break")}</label>
+                <input type="number" min="1" id="pomo-custom-break" class="pomodoro-custom-input" value="${getState().pomodoroSettings.breakMinutes}"/>
+              </div>
               <button type="button" class="btn btn-primary btn-sm" id="pomo-custom-apply" data-i18n="pomodoro.custom.apply">${t("pomodoro.custom.apply")}</button>
             </div>
           </div>
@@ -87,12 +87,22 @@ export class BookViewPomodoro extends BookView {
         setPomodoroSettings(work, brk, getState().pomodoroSettings.longBreakMinutes);
         this.resetTimer();
         this.syncPresetChips();
+        this.closeCustomForm();
       });
     });
     this.querySelector("#pomo-preset-custom")?.addEventListener("click", (e) => {
       const form = this.querySelector<HTMLElement>("#pomo-custom-form");
+      const btn = e.currentTarget as HTMLElement;
       if (form) form.hidden = !form.hidden;
-      (e.currentTarget as HTMLElement).setAttribute("aria-expanded", form ? String(!form.hidden) : "false");
+      const isOpen = form ? !form.hidden : false;
+      btn.setAttribute("aria-expanded", String(isOpen));
+      btn.classList.toggle("active", isOpen);
+      if (isOpen) {
+        this.querySelectorAll<HTMLElement>("[data-pomo-preset]").forEach((preset) => {
+          preset.classList.remove("active");
+          preset.setAttribute("aria-pressed", "false");
+        });
+      }
     });
     this.querySelector("#pomo-custom-apply")?.addEventListener("click", () => {
       const work = Number(this.querySelector<HTMLInputElement>("#pomo-custom-work")?.value);
@@ -115,9 +125,17 @@ export class BookViewPomodoro extends BookView {
     this.querySelectorAll<HTMLElement>("[data-pomo-preset]").forEach((btn) => {
       const [work, brk] = (btn.dataset.pomoPreset ?? "").split("-").map(Number);
       const isActive = work === settings.workMinutes && brk === settings.breakMinutes;
-      btn.classList.toggle("chip--active", isActive);
+      btn.classList.toggle("active", isActive);
       btn.setAttribute("aria-pressed", String(isActive));
     });
+  }
+
+  private closeCustomForm(): void {
+    const form = this.querySelector<HTMLElement>("#pomo-custom-form");
+    const btn = this.querySelector<HTMLElement>("#pomo-preset-custom");
+    if (form) form.hidden = true;
+    btn?.setAttribute("aria-expanded", "false");
+    btn?.classList.remove("active");
   }
 
   private setConfigEnabled(enabled: boolean): void {

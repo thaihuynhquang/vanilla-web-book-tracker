@@ -21,7 +21,8 @@
   padding: var(--space-md) 0;
 }
 
-.pomodoro-modes {
+.pomodoro-modes,
+.pomodoro-presets {
   display: flex;
   gap: var(--space-xs);
   padding: var(--space-2xs);
@@ -29,7 +30,8 @@
   border: 1px solid var(--border-color);
 }
 
-.pomodoro-mode-btn {
+.pomodoro-mode-btn,
+.pomodoro-preset-btn {
   padding: var(--space-2xs) var(--space-lg);
   border-radius: var(--radius-full);
   border: none;
@@ -38,22 +40,36 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   transition: all var(--transition-fast);
+  outline-offset: 2px;
 }
 
-.pomodoro-mode-btn:hover:not(.active) {
+.pomodoro-mode-btn:hover:not(.active),
+.pomodoro-preset-btn:hover:not(.active) {
   background: var(--surface-tint-strong);
   color: var(--text-primary);
 }
 
-.pomodoro-mode-btn:active {
+.pomodoro-mode-btn:active,
+.pomodoro-preset-btn:active {
   transform: scale(0.96);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
-.pomodoro-mode-btn.active {
+.pomodoro-mode-btn.active,
+.pomodoro-preset-btn.active {
   background: var(--primary);
   color: #fff;
   box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.pomodoro-mode-btn:focus-visible,
+.pomodoro-preset-btn:focus-visible {
+  outline: 2px solid var(--primary);
+}
+
+.pomodoro-preset-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .pomodoro-mode-btn[data-pomo-mode="shortBreak"].active,
@@ -177,34 +193,34 @@
   box-shadow: 0 0 0 4px var(--accent-emerald-glow);
 }
 
-.pomodoro-presets {
-  display: flex;
-  gap: var(--space-xs);
-}
-
 .pomodoro-custom-form {
   display: flex;
   flex-wrap: wrap;
-  align-items: end;
+  align-items: center;
   justify-content: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
 }
 
-.pomodoro-custom-form label {
+.pomodoro-custom-group {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-3xs);
+  align-items: center;
+  gap: var(--space-2xs);
   font-size: var(--font-size-xs);
   color: var(--text-secondary);
 }
 
-.pomodoro-custom-form input[type="number"] {
-  width: 80px;
-  padding: var(--space-2xs) var(--space-xs);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background: var(--bg-card);
+.pomodoro-custom-input {
+  width: 64px;
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color-strong);
+  background: var(--bg-main);
   color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
 }
 
 .pomodoro-history-card .progress-header {
