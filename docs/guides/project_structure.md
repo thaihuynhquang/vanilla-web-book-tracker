@@ -1,6 +1,6 @@
 # PROJECT DIRECTORY STRUCTURE
 
-Detailed directory tree, file responsibilities, and module layout for the **Vanilla Web Book Tracker** app. This describes the structure to be built — no `src/` exists yet in this repo.
+Detailed directory tree, file responsibilities, and module layout for the **Vanilla Web Book Tracker** app, as implemented in `src/`.
 
 ---
 
@@ -32,9 +32,16 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   ├── actions/
 │   │   └── backup.ts               # JSON export/import & progress reset handlers
 │   ├── data/
-│   │   ├── bookData.ts             # Facade: getChapters()/getMetaData()/getLabs()/getGlossary()/getResources()/getQuitCriteriaData()
-│   │   ├── bookData.vi.ts          # Vietnamese book content (15 chapters, 95 sections, labs, glossary, resources, quit criteria)
-│   │   └── bookData.en.ts          # English book content - same ids/shape as bookData.vi.ts
+│   │   ├── bookData.ts             # Facade: getChapters()/getMetaData()/getLabs()/getGlossary()/getResources()/getQuitCriteriaData(); dev-only id-set and content-count assertions
+│   │   ├── bookData.vi.ts          # Vietnamese chapter summaries, lab content, quit-criteria prose; composes shared/ into Chapter[]/Lab[]/QuitCriteriaRow[]
+│   │   ├── bookData.en.ts          # English translations of the same prose - same ids/shape as bookData.vi.ts
+│   │   └── shared/                 # Language-independent structure - the single source of id parity between vi/en
+│   │       ├── sections.ts         # SECTIONS_BY_CHAPTER: 95 Section objects (ids, nums, subsections, estMinutes)
+│   │       ├── chapterMeta.ts      # CHAPTER_META: chapter id/num/title/tbd/labId/flashcardId/glossaryRefs
+│   │       ├── labMeta.ts          # LAB_META: lab id/chapterId/apisUsed/tbd
+│   │       ├── flashcards.ts       # FLASHCARD_TASKS: 15 FlashcardTask objects
+│   │       ├── glossary.ts         # GLOSSARY: 60 GlossaryTerm objects (description is Vietnamese in both bundles, per the data model)
+│   │       └── resources.ts        # RESOURCES: 41 Resource objects (title is shared across locales, per the data model)
 │   ├── i18n/
 │   │   ├── strings.ts              # UI_STRINGS table, one flat key -> string map per language
 │   │   ├── index.ts                # t(key, params) + plural(n, vi, enOne, enOther)
@@ -55,9 +62,13 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   ├── utils/
 │   │   ├── audio.ts                # Pomodoro chime via Web Audio API
 │   │   ├── icons.ts                # SVG icon dictionary
-│   │   └── notification.ts         # Web Notification API
+│   │   ├── notification.ts         # Web Notification API
+│   │   └── html.ts                 # escapeHtml() - required for any user-typed string interpolated into a view's HTML
 │   ├── views/
-│   │   ├── book-view-dashboard.ts    # <book-view-dashboard> - progress stats, active chapter, next section, Pomodoro
+│   │   ├── base.ts                   # BookView - shared connectedCallback/disconnectedCallback/render-listener lifecycle; skips refresh() while hidden
+│   │   ├── helpers.ts                # chapterFilterChipsHtml(), searchHeaderHtml()/bindSearch() - shared chip-filter and search-input markup, binds without losing focus/caret
+│   │   ├── index.ts                  # registers all <book-view-*> custom elements
+│   │   ├── book-view-dashboard.ts    # <book-view-dashboard> - progress stats, active chapter, next section (or hands-on-pending), Pomodoro
 │   │   ├── book-view-chapters.ts     # <book-view-chapters> - 15 accordion chapters, section checklists
 │   │   ├── book-view-labs.ts         # <book-view-labs> - 15 labs + 15 flashcard tasks
 │   │   ├── book-view-glossary.ts     # <book-view-glossary> - searchable Web API glossary

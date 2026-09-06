@@ -1,18 +1,31 @@
 # Vanilla Web Book Tracker
 
-> 🇻🇳 Bộ tài liệu blueprint (docs-only) để dựng một Interactive Web Tracker theo dõi tiến độ đọc & thực hành cuốn sách [*Vanilla Web*](https://www.manning.com/books/vanilla-web) (Manning). **Repo này hiện chưa có code app** — chỉ có đặc tả kỹ thuật đầy đủ để một AI agent hoặc developer dựng app từ đầu.
+> 🇻🇳 Interactive Web Tracker theo dõi tiến độ đọc & thực hành cuốn sách [*Vanilla Web*](https://www.manning.com/books/vanilla-web) (Manning). App đã được xây dựng theo blueprint trong `docs/` — xem bên dưới để chạy local hoặc deploy.
 >
-> 🇬🇧 A docs-only blueprint for building an Interactive Web Tracker that follows reading and hands-on progress through the book [*Vanilla Web*](https://www.manning.com/books/vanilla-web) (Manning). **No app code exists in this repo yet** — only a complete technical spec so an AI agent or developer can build the app from scratch.
+> 🇬🇧 An Interactive Web Tracker that follows reading and hands-on progress through the book [*Vanilla Web*](https://www.manning.com/books/vanilla-web) (Manning). The app is built to the blueprint in `docs/` — see below to run it locally or deploy it.
 
 ## Trạng thái / Status
 
-📋 **Docs-only** — chưa code. Đọc `docs/guides/book_data_model_guide.md` trước tiên, đây là hợp đồng dữ liệu mà mọi guide/content khác tham chiếu.
+✅ **Đã có code** — `src/` triển khai đầy đủ blueprint trong `docs/guides/`. Đọc `docs/guides/book_data_model_guide.md` trước tiên nếu bạn sửa nội dung sách, đây là hợp đồng dữ liệu mà mọi guide/content khác tham chiếu.
 
-📋 **Docs-only** — no code yet. Read `docs/guides/book_data_model_guide.md` first — it's the data contract every other guide/content file references.
+✅ **Built** — `src/` fully implements the blueprint in `docs/guides/`. Read `docs/guides/book_data_model_guide.md` first if you're editing book content — it's the data contract every other guide/content file references.
 
-## Kiến trúc dự kiến / Planned architecture
+## Chạy local / Run locally
 
-Vanilla TypeScript + native Custom Elements (Light DOM) + layered vanilla CSS + `localStorage`, deploy qua GitHub Pages — cùng kiến trúc với dự án chị em [Applied AI Engineer Roadmap 2026 Tracker](https://github.com/thaihuynhquang/applied-ai-engineer-roadmap-2026-vn), chỉ khác nội dung theo dõi (sách 15 chương thay vì lộ trình học AI).
+```bash
+npm install
+npm run dev       # http://localhost:5173
+npm run build     # type-check + production build to dist/
+npm run typecheck # tsc --noEmit only
+```
+
+Deploy tự động lên GitHub Pages qua `.github/workflows/deploy.yml` khi push lên `main` — xem [github_pages_deployment_guide.md](docs/guides/github_pages_deployment_guide.md).
+
+Automatically deployed to GitHub Pages via `.github/workflows/deploy.yml` on push to `main` — see [github_pages_deployment_guide.md](docs/guides/github_pages_deployment_guide.md).
+
+## Kiến trúc / Architecture
+
+Vanilla TypeScript + native Custom Elements (Light DOM) + layered vanilla CSS + `localStorage` — cùng kiến trúc với dự án chị em [Applied AI Engineer Roadmap 2026 Tracker](https://github.com/thaihuynhquang/applied-ai-engineer-roadmap-2026-vn), chỉ khác nội dung theo dõi (sách 15 chương thay vì lộ trình học AI). Chi tiết ở [architecture_guide.md](docs/guides/architecture_guide.md) và [project_structure.md](docs/guides/project_structure.md).
 
 ## Bản đồ tài liệu / Documentation map
 
@@ -44,6 +57,3 @@ Overall % = Read % × 0.4 + Hands-on % × 0.4 + Chapter deliverables % (lab + fl
 
 Pomodoro sessions được theo dõi và hiển thị trên Dashboard nhưng **không** tính vào công thức trên.
 
-## Bước tiếp theo / Next step
-
-Giao `docs/` cho một AI agent hoặc tự code theo blueprint để dựng `src/` — bắt đầu từ Step 1 trong [architecture_guide.md](docs/guides/architecture_guide.md#5-step-by-step-blueprint-for-ai-agents).

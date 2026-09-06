@@ -1,6 +1,6 @@
 # ARCHITECTURE & REPLICATION GUIDE
 
-This document summarizes the complete technical architecture, technology stack, design patterns, project directory structure, data flow, and state management intended for the **Vanilla Web Book Tracker** app. It is designed as a **Master Blueprint** so any AI Agent or developer can build this app from scratch, purely from the docs in this repo — no source code exists yet.
+This document summarizes the complete technical architecture, technology stack, design patterns, project directory structure, data flow, and state management for the **Vanilla Web Book Tracker** app. It served as the **Master Blueprint** the app in `src/` was built from, and remains the reference for extending it — any AI Agent or developer changing `src/` should read it first.
 
 > [!NOTE]
 > This blueprint is adapted from the architecture of a sibling project, the *Applied AI Engineer Roadmap 2026* tracker (a working SPA with the same architecture, different content domain). The patterns below are proven in that codebase; only the content model and progress formula differ here.

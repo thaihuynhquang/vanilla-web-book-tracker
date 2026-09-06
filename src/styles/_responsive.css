@@ -1,0 +1,38 @@
+@media (max-width: 800px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-bar-row {
+    grid-template-columns: 100px 1fr 42px;
+  }
+
+  .quit-box {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-header {
+    padding: 0.6rem 0.9rem;
+  }
+
+  .header-subtitle {
+    display: none;
+  }
+
+  .view-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .section-row-checks {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+}

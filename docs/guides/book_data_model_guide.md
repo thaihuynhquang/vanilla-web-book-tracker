@@ -9,13 +9,16 @@ This document is the **data contract** for the Vanilla Web Book Tracker. Every o
 
 ## 1. Source of truth files
 
-Following the pattern of `planData.vi.ts` / `planData.en.ts` / `planData.ts` in the original roadmap tracker:
+Following the pattern of `planData.vi.ts` / `planData.en.ts` / `planData.ts` in the original roadmap tracker, with one addition: language-independent structure (ids, numbering, subsections, chapter/lab/glossary/resource metadata) lives once in `src/data/shared/`, so id parity between locales is structural rather than merely checked.
 
-- `src/data/bookData.vi.ts` — Vietnamese content bundle.
-- `src/data/bookData.en.ts` — English content bundle, **identical id set and shape** as the Vietnamese file.
+- `src/data/shared/*.ts` — `sections.ts`, `chapterMeta.ts`, `labMeta.ts`, `flashcards.ts`, `glossary.ts`, `resources.ts`. Ids, nums, and every field that must not vary by language. Edit these once; both bundles pick it up.
+- `src/data/bookData.vi.ts` — Vietnamese-only prose (chapter summaries, lab titles/goals/requirements/acceptance criteria, quit-criteria text) composed together with `shared/` into `Chapter[]` / `Lab[]` / `QuitCriteriaRow[]`.
+- `src/data/bookData.en.ts` — English translations of the same prose, composed the same way — **identical id set and shape** as the Vietnamese file, guaranteed by both files reading from the same `shared/` records.
 - `src/data/bookData.ts` — thin facade, picks a bundle by `state.lang` and exposes `getChapters()`, `getMetaData()`, `getLabs()`, `getGlossary()`, `getResources()`, `getQuitCriteriaData()`.
 
-**Never rename or reassign an existing id.** Ids are the primary key for completion state persisted in `localStorage`. A dev-only check in `bookData.ts` (mirroring the original repo's check) must log a `console.error` if the id sets of the two language files ever diverge.
+`GlossaryTerm` and `Resource` records live in `shared/` as single objects (not per-locale) because `descriptionVi` and `title` are defined as shared fields in the interfaces below — there is no English variant to diverge, so `getGlossaryVi()`/`getGlossaryEn()` and `getResourcesVi()`/`getResourcesEn()` return the same array.
+
+**Never rename or reassign an existing id.** Ids are the primary key for completion state persisted in `localStorage`. A dev-only check in `bookData.ts` logs a `console.error` if the id sets of the two language files ever diverge (defence for the prose-keyed records in `bookData.vi.ts`/`bookData.en.ts`) and if the chapter/section/lab/flashcard counts in §6 below don't match what `shared/` actually contains.
 
 ## 2. TypeScript interfaces
 
