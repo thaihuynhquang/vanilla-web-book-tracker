@@ -11,7 +11,6 @@ body {
 }
 
 html {
-  color-scheme: dark light;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
 }

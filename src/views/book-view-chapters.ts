@@ -207,7 +207,7 @@ export class BookViewChapters extends BookView {
     const isFlashcardDone = !!state.flashcardDone[chapter.flashcardId];
 
     return surfaceCardHtml({
-      className: "deliverable-card deliverable-card--flashcard",
+      className: "deliverable-card",
       iconHtml: icon("cards"),
       headerHtml: `<span class="surface-card-title">${t("chapters.flashcard.label")}</span>`,
       bodyHtml: `<p><a href="${FLASHCARDS_GUIDE_URL}" target="_blank" rel="noopener noreferrer" class="flashcard-guide-link">${t("chapters.flashcard.guideLink")}</a></p>`,

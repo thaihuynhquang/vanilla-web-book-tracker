@@ -285,7 +285,7 @@ export class BookViewPomodoro extends BookView {
           </div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon metric-icon--emerald">${icon("clock")}</div>
+          <div class="metric-icon metric-icon--lime">${icon("clock")}</div>
           <div class="metric-info">
             <span class="metric-value">${todayMinutes} ${t("pomodoro.history.minutes")}</span>
             <span class="metric-label">${t("pomodoro.metric.todayMinutes", { hours: todayHoursStr })}</span>

@@ -170,7 +170,7 @@
 }
 
 .section-badge--done {
-  color: var(--accent-emerald);
+  color: var(--accent-lime);
 }
 
 .section-check {
@@ -206,10 +206,6 @@
 .deliverable-card {
   --card-surface: transparent;
   margin-top: var(--space-md);
-}
-
-.deliverable-card--flashcard {
-  --card-accent: var(--accent-purple);
 }
 
 .deliverable-checkbox {
@@ -324,7 +320,7 @@
 }
 
 .resource-badge--demo {
-  --badge-color: var(--accent-emerald);
+  --badge-color: var(--accent-lime);
 }
 
 .resource-badge--tool {
@@ -375,7 +371,7 @@
 
 .btn--resource:hover {
   background: var(--primary);
-  color: #fff;
+  color: var(--primary-contrast);
 }
 
 /* Quit criteria */
@@ -424,8 +420,8 @@
 }
 
 .quit-box--pivot {
-  background: color-mix(in srgb, var(--accent-emerald) 12%, transparent);
-  color: var(--accent-emerald);
+  background: color-mix(in srgb, var(--accent-lime) 12%, transparent);
+  color: var(--accent-lime);
 }
 
 .quit-box-label {

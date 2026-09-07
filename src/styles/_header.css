@@ -28,7 +28,7 @@
 }
 
 .header-brand:hover .header-logo {
-  transform: scale(1.12) rotate(8deg);
+  transform: scale(1.08) rotate(-3deg);
 }
 
 .header-brand h1 {

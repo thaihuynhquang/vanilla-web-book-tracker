@@ -148,9 +148,9 @@ export class BookViewDashboard extends BookView {
       return;
     }
 
-    nextFocusEl.className = "card card--accent-emerald";
+    nextFocusEl.className = "card card--accent-lime";
     nextFocusEl.innerHTML = `
-      <div class="progress-card-header-title--emerald">${icon("checkCircle")} ${t("dashboard.nextSection.allDone")}</div>
+      <div class="progress-card-header-title--lime">${icon("checkCircle")} ${t("dashboard.nextSection.allDone")}</div>
     `;
   }
 

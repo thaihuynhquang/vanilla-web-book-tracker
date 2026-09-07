@@ -19,9 +19,9 @@ export const LEGACY_ROUTE_ALIASES: Record<string, RouteId> = {
 };
 
 export const CHAPTER_STATUS_COLOR: Record<"notStarted" | "inProgress" | "done", string> = {
-  notStarted: "var(--text-muted)",
+  notStarted: "var(--status-idle)",
   inProgress: "var(--accent-amber)",
-  done: "var(--accent-emerald)",
+  done: "var(--accent-lime)",
 };
 
 export const TOTAL_SECTIONS = 95;

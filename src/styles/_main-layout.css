@@ -24,8 +24,8 @@
   border-left: 4px solid var(--primary);
 }
 
-.card--accent-emerald {
-  border-left: 4px solid var(--accent-emerald);
+.card--accent-lime {
+  border-left: 4px solid var(--accent-lime);
 }
 
 .view-header {
@@ -75,7 +75,7 @@
 
 .btn:active:not(:disabled) {
   transform: translateY(1px) scale(0.98);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 2px 6px var(--shadow-press);
 }
 
 .btn:disabled {
@@ -85,7 +85,7 @@
 
 .btn-primary {
   background: var(--primary);
-  color: #fff;
+  color: var(--primary-contrast);
 }
 
 .btn-primary:hover {
@@ -110,17 +110,6 @@
 
 .btn-ghost:active:not(:disabled) {
   background: var(--surface-tint-strong);
-}
-
-.btn-outline {
-  background: transparent;
-  border-color: var(--accent-sky);
-  color: var(--accent-sky);
-}
-
-.btn-outline:hover {
-  background: var(--accent-sky);
-  color: #fff;
 }
 
 .btn-sm {
@@ -180,13 +169,13 @@ input[type="checkbox"]:focus-visible {
 
 .filter-pill:active {
   transform: translateY(1px) scale(0.98);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 2px 4px var(--shadow-press);
 }
 
 .filter-pill.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--primary-contrast);
 }
 
 .filter-pill.active:hover {
@@ -241,13 +230,9 @@ input[type="checkbox"]:focus-visible {
   transition: width var(--transition-normal);
 }
 
-.progress-bar-fill--overall {
-  background: linear-gradient(90deg, var(--primary), var(--accent-purple));
-}
-
 .progress-bar-fill--dynamic {
   width: var(--progress, 0%);
-  background: var(--status-color, linear-gradient(90deg, var(--primary), var(--accent-emerald)));
+  background: var(--status-color, linear-gradient(90deg, var(--primary), var(--accent-lime)));
 }
 
 .progress-bar-pct {
@@ -308,9 +293,9 @@ input[type="checkbox"]:focus-visible {
   color: var(--primary);
 }
 
-.metric-icon--emerald {
-  background: color-mix(in srgb, var(--accent-emerald) 15%, transparent);
-  color: var(--accent-emerald);
+.metric-icon--lime {
+  background: color-mix(in srgb, var(--accent-lime) 15%, transparent);
+  color: var(--accent-lime);
 }
 
 .metric-icon--amber {
@@ -364,7 +349,7 @@ input[type="checkbox"]:focus-visible {
 .progress-percentage {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-black);
-  color: var(--accent-emerald);
+  color: var(--accent-lime);
 }
 
 .progress-card-tag {
@@ -378,10 +363,10 @@ input[type="checkbox"]:focus-visible {
   gap: var(--space-2xs);
 }
 
-.progress-card-header-title--emerald {
+.progress-card-header-title--lime {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  color: var(--accent-emerald);
+  color: var(--accent-lime);
   display: flex;
   align-items: center;
   gap: var(--space-xs);
@@ -550,9 +535,9 @@ input[type="checkbox"]:focus-visible {
 }
 
 .item-row--done {
-  --card-accent: var(--accent-emerald);
+  --card-accent: var(--accent-lime);
   opacity: 0.85;
-  background: color-mix(in srgb, var(--accent-emerald) 5%, transparent);
+  background: color-mix(in srgb, var(--accent-lime) 8%, transparent);
 }
 
 .filter-toggle {
@@ -591,13 +576,19 @@ input[type="checkbox"]:focus-visible {
 }
 
 .toast--success {
-  border-color: var(--accent-emerald);
+  border-color: var(--accent-lime);
+  border-left: 3px solid var(--accent-lime);
+  background: color-mix(in srgb, var(--accent-lime) 12%, var(--bg-card));
 }
 
 .toast--error {
   border-color: var(--accent-rose);
+  border-left: 3px solid var(--accent-rose);
+  background: color-mix(in srgb, var(--accent-rose) 12%, var(--bg-card));
 }
 
 .toast--info {
   border-color: var(--accent-sky);
+  border-left: 3px solid var(--accent-sky);
+  background: color-mix(in srgb, var(--accent-sky) 12%, var(--bg-card));
 }

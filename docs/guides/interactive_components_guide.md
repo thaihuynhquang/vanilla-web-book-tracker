@@ -78,7 +78,7 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 ### 3.3. Active Chapter & Next Focus Card
 - **User Story**: As a reader, I want to see which chapter I'm on and what to do next without hunting through the Chapters tab.
 - **UI Component**: `Dashboard View Component` ("Next Focus" card, `.card--accent-primary`).
-- **Flow**: Progress Engine finds first chapter not 100% read+hands-on → if it has an unread section, renders that section + a "Mark as read" button (`data-section-id`); else renders its first section still missing hands-on + a "Mark hands-on" button (`data-handson-id`). When every chapter is complete, renders a `.card--accent-emerald` "all done" state instead.
+- **Flow**: Progress Engine finds first chapter not 100% read+hands-on → if it has an unread section, renders that section + a "Mark as read" button (`data-section-id`); else renders its first section still missing hands-on + a "Mark hands-on" button (`data-handson-id`). When every chapter is complete, renders a `.card--accent-lime` "all done" state instead.
 - **Trigger**: click either button → `toggleRead(sectionId)` / `toggleHandsOn(sectionId)` → Dashboard recalculates and re-renders.
 - **AC**:
   - [ ] Clicking a button updates state and recalculates overall % immediately.
@@ -133,7 +133,7 @@ Both deliverables below render at the end of each chapter card in `Chapters View
 
 ### 5.2. Flashcard Task Checklist
 - **User Story**: As a reader, I want one checkbox per chapter confirming "I generated and reviewed my flashcard deck," without the app needing to store the deck itself.
-- **UI Component**: `Chapters View Component` (`.deliverable-card--flashcard`, one per chapter, linked from `docs/content/flashcards_guide.md`).
+- **UI Component**: `Chapters View Component` (`.deliverable-card`, one per chapter, linked from `docs/content/flashcards_guide.md`).
 - **Flow**: single checkbox bound to `data-flashcard-id` calls `toggleFlashcardDone(flashcardId)`.
 - **AC**:
   - [ ] This is intentionally the only flashcard state the app stores — no spaced-repetition scheduling, no card content in `localStorage`.
@@ -203,7 +203,7 @@ Glossary terms and reading-list links render as one merged, flat grid — sorted
 ## 9. Pomodoro View Specifications (PRD-08, own tab, tracked but not weighted)
 
 - **UI Component**: `<book-view-pomodoro>`, its own nav tab (not embedded in Dashboard).
-- **Mechanics**: identical to the sibling roadmap tracker's Schedule view — mode switch Focus/Short Break/Long Break, `25/5`/`50/5`/Custom presets, countdown + SVG progress ring (ambient glow pulses while running, swaps to emerald on break), Web Audio chime, Web Notification, session history log with delete. The only difference from the sibling project: **no task-linking dropdown** (no per-task Pomodoro assignment, since reading isn't decomposed that finely).
+- **Mechanics**: identical to the sibling roadmap tracker's Schedule view — mode switch Focus/Short Break/Long Break, `25/5`/`50/5`/Custom presets, countdown + SVG progress ring (ambient glow pulses while running, swaps to lime on break), Web Audio chime, Web Notification, session history log with delete. The only difference from the sibling project: **no task-linking dropdown** (no per-task Pomodoro assignment, since reading isn't decomposed that finely).
 - **Flow**: the timer's own Custom Element keeps its running/paused state in instance fields (not `AppState`) so a global `renderAll()` from an unrelated action (e.g. toggling a section elsewhere) never interrupts a running countdown; only completing a session calls `addPomodoroSession()` and `renderAll()`.
 - **Cross-view effect**: the resulting session count/duration feeds the Dashboard's "focus hours" metric tile (§3.1) — but the timer UI itself lives only on this tab, and Pomodoro sessions are never part of `calculateProgress()`'s weighted formula.
 - **AC**:
