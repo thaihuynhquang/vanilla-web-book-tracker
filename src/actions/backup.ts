@@ -16,7 +16,6 @@ function isValidAppState(value: unknown): value is AppState {
     typeof v.handsOn !== "object" ||
     typeof v.labDone !== "object" ||
     typeof v.flashcardDone !== "object" ||
-    typeof v.resourceFlags !== "object" ||
     typeof v.activeTab !== "string" ||
     typeof v.theme !== "string" ||
     typeof v.lang !== "string" ||

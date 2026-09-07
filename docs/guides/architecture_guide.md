@@ -13,7 +13,7 @@ The application is a **Single Page Application (SPA)** for tracking reading and 
 
 - **Core Philosophy**: Lightweight, zero-framework runtime overhead, modularized using **Vanilla TypeScript** combined with **Custom Elements (Web Components — Light DOM)** and **Layered Vanilla CSS**. The app deliberately does not use any of the frameworks the book itself teaches you to do without.
 - **Data-Driven Architecture**: 100% of book content (chapters, sections, sub-sections, labs, flashcard tasks, glossary, resources, quit criteria) is decoupled into `src/data/bookData.vi.ts` / `bookData.en.ts`, one file per language, identical `id`s — see **[book_data_model_guide.md](./book_data_model_guide.md)** for the full schema and id map. `src/data/bookData.ts` is a thin facade selecting the active bundle by `state.lang`.
-- **Centralized State Store & Client-side Persistence**: Singleton `AppState` in `src/state/storage.ts`. Read/hands-on/lab/flashcard progress, theme, language, resource bookmarks, and Pomodoro session logs persist to `localStorage`, with JSON Import/Export for backup.
+- **Centralized State Store & Client-side Persistence**: Singleton `AppState` in `src/state/storage.ts`. Read/hands-on/lab/flashcard progress, theme, language, and Pomodoro session logs persist to `localStorage`, with JSON Import/Export for backup.
 - **i18n**: Vietnamese/English UI chrome driven by `src/i18n/` (`t()`/`plural()` string lookup + a `data-i18n` DOM sweep for static header markup); book content is the two `bookData.*.ts` files above.
 - **Observer-Driven Reactive Loop**: automatic sync between the State Store and active Custom Elements without a Virtual DOM.
 - **Independent Pomodoro Engine**: countdown timer with Web Audio API chime and browser notifications — tracked and displayed, but **excluded from the progress formula** (see Pattern 4).
@@ -45,7 +45,7 @@ Full directory tree and file responsibilities: **[project_structure.md](./projec
 - **`src/data/`**: `bookData.vi.ts` / `bookData.en.ts` + `bookData.ts` facade — 100% of book content, one file per language.
 - **`src/state/`**: `storage.ts` — singleton `AppState`, `localStorage`.
 - **`src/i18n/`**: `strings.ts`, `index.ts` (`t()`/`plural()`), `dom.ts` (static header sweep).
-- **`src/views/`**: `<book-view-*>` Custom Elements for the 6 tabs (Dashboard, Chapters, Pomodoro, Glossary, Resources, Quit Criteria).
+- **`src/views/`**: `<book-view-*>` Custom Elements for the 5 tabs (Dashboard, Chapters, Pomodoro, Resources, Quit Criteria). Resources merges glossary terms and reading-list links into one grid.
 - **`src/styles/`**: layered CSS (`@layer`) + CSS Custom Properties (`_tokens.css`).
 - **`src/actions/`**, **`src/utils/`**, **`src/types/`**: pure utilities, type interfaces, backup/restore.
 
@@ -147,7 +147,7 @@ Implement `calculateProgress()` per Pattern 4 above.
 
 ### Step 5: Router & Central Renderer
 1. `src/renderer.ts`: `registerRenderListener()`, `renderAll()`.
-2. `src/router.ts`: hash routing across `#/dashboard`, `#/chapters`, `#/pomodoro`, `#/glossary`, `#/resources`, `#/quitcriteria`. `loadState()`/`replaceState()` in `storage.ts` normalize any legacy `#/labs`/`activeTab: "labs"` (pre-merge saves or backups) back to a valid route.
+2. `src/router.ts`: hash routing across `#/dashboard`, `#/chapters`, `#/pomodoro`, `#/resources`, `#/quitcriteria`. `loadState()`/`replaceState()` in `storage.ts` normalize any legacy `#/labs`/`#/glossary` (`activeTab: "labs"` / `"glossary"`, pre-merge saves or backups) through `LEGACY_ROUTE_ALIASES` (`constants.ts`) back to a valid route.
 
 ### Step 6: Custom Element Views (`src/views/`)
 One `<book-view-*>` per tab per **[interactive_components_guide.md](./interactive_components_guide.md)**.

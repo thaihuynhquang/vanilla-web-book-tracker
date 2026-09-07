@@ -4,13 +4,15 @@ import {
   DEFAULT_POMODORO_LONG_BREAK_MINUTES,
   DEFAULT_POMODORO_WORK_MINUTES,
   LANG_KEY,
+  LEGACY_ROUTE_ALIASES,
   ROUTE_IDS,
   STORAGE_KEY,
   THEME_KEY,
 } from "../constants";
 
 export function normalizeActiveTab(tab: unknown, fallback: RouteId): RouteId {
-  return ROUTE_IDS.includes(tab as RouteId) ? (tab as RouteId) : fallback;
+  const resolved = LEGACY_ROUTE_ALIASES[tab as string] ?? tab;
+  return ROUTE_IDS.includes(resolved as RouteId) ? (resolved as RouteId) : fallback;
 }
 
 function defaultState(): AppState {
@@ -19,7 +21,6 @@ function defaultState(): AppState {
     handsOn: {},
     labDone: {},
     flashcardDone: {},
-    resourceFlags: {},
     activeTab: "dashboard",
     theme: "dark",
     lang: "vi",
@@ -59,7 +60,6 @@ export function loadState(): AppState {
       handsOn: parsed.handsOn ?? fallback.handsOn,
       labDone: parsed.labDone ?? fallback.labDone,
       flashcardDone: parsed.flashcardDone ?? fallback.flashcardDone,
-      resourceFlags: parsed.resourceFlags ?? fallback.resourceFlags,
       activeTab: normalizeActiveTab(parsed.activeTab, fallback.activeTab),
       theme: parsed.theme ?? detectPreferredTheme(),
       lang: parsed.lang ?? detectPreferredLang(),
@@ -132,11 +132,6 @@ export function toggleLabDone(labId: string): void {
 
 export function toggleFlashcardDone(flashcardId: string): void {
   state.flashcardDone[flashcardId] = !state.flashcardDone[flashcardId];
-  saveState();
-}
-
-export function toggleResourceFlag(resourceId: string): void {
-  state.resourceFlags[resourceId] = !state.resourceFlags[resourceId];
   saveState();
 }
 

@@ -94,7 +94,7 @@ src/styles/
 ├── _main-layout.css  # -> @layer components — shared primitives: .card, .stat-grid/.metric-card,
 │                       #   .status-badge--dynamic, .tag, .item-row, .progress-bar-fill--dynamic
 ├── _views.css         # -> @layer views (chapter cards, dashboard chapter-progress-list, lab cards,
-│                       #   glossary cards, resource cards, quit-matrix)
+│                       #   resource cards, quit-matrix)
 ├── _pomodoro.css      # -> @layer views (Pomodoro tab: hero card, ring, mode pills, history)
 └── _responsive.css   # -> @layer utilities (768px / 480px breakpoints)
 ```
@@ -107,7 +107,7 @@ src/styles/
 Sticky, `justify-content: space-between`. Children: `.header-brand` (logo + "Vanilla Web Book Tracker" title, subtitle "Reading & Practice Tracker"), `.header-actions` (Export, Import, Reset-danger, Language toggle, Theme toggle) — same layout as the sibling project, with a glow/hover-rotate treatment on the brand logo.
 
 ### 3.2. Navigation Tab Bar (`.nav-tabs-container`, `.nav-tab`)
-6 tabs: **Dashboard, Chapters, Pomodoro, Glossary, Resources, Quit Criteria**. Horizontal-scroll on mobile, centered `max-width: 1200px` on desktop. Only the Dashboard tab shows a badge (`#badge-overall-pct`, `.nav-tab-badge`) with the weighted overall %. There is no separate Labs tab — the lab and flashcard deliverables render inside each chapter card (§3.4, §3.7).
+5 tabs: **Dashboard, Chapters, Pomodoro, Resources, Quit Criteria**. Horizontal-scroll on mobile, centered `max-width: 1200px` on desktop. Only the Dashboard tab shows a badge (`#badge-overall-pct`, `.nav-tab-badge`) with the weighted overall %. There is no separate Labs tab — the lab and flashcard deliverables render inside each chapter card (§3.4, §3.7). There is no separate Glossary tab either — glossary terms merged into the Resources tab (§3.8).
 
 ### 3.3. Dashboard View (`<book-view-dashboard>`)
 - **Stat grid** (`.stat-grid` → `.metric-card` × 4): sections read (`N/95`), hands-on sections done, chapter deliverables done (labs + flashcards), total Pomodoro focus hours. Each tile is an icon square (`.metric-icon--primary/--amber/--sky`, 15%-alpha tint of the accent color) + a big value + a muted label. There is deliberately **no** "overall %" tile — it would duplicate the progress card immediately below.
@@ -133,10 +133,10 @@ Sticky, `justify-content: space-between`. Children: `.header-brand` (logo + "Van
 ### 3.6. Pomodoro View (`<book-view-pomodoro>`) — own tab
 - **Layout**: hero card, metric row, and history card all span the same full content width (no card-specific `max-width`) so the tab lines up with every other tab's cards — `.pomodoro-container > .card, .pomodoro-container > .stat-grid { margin-bottom: 0 }` avoids the double-margin (container `gap` + `.card`'s own `margin-bottom`) that used to throw the cards' vertical rhythm off.
 - **Hero card** (`.pomodoro-hero-card`): mode segmented-pill group (Focus/Short Break/Long Break, `aria-pressed` synced with `.active`), an SVG progress ring (`.pomodoro-ring-wrap`, sized `clamp(280px, 62vw, 400px)`, thin 6px stroke so the primary/emerald arc reads as a line rather than a band, ambient glow via a `::before` radial-gradient that pulses while `.running`), digital countdown (`.pomodoro-time`, tabular-nums, `clamp(2.4rem, 11vw, 3.5rem)`, `role="timer"`), pill-shaped Start/Reset buttons (Reset carries the `rotateCcw` icon at 18px, sized down from the shared 22px control-icon rule since its thin outline glyph would otherwise read heavier than Start/Pause's solid fill icons at the same box size), and a duration-preset segmented pill group (`25/5`, `50/5`, `Custom`) plus a custom-duration row.
-- **Presets share the mode-pill's exact visual language**: `.pomodoro-modes` and `.pomodoro-presets` are one merged container rule (bordered pill-group), and `.pomodoro-mode-btn`/`.pomodoro-preset-btn` are one merged button rule (transparent/muted by default, `--surface-tint-strong` hover, `--primary` fill + glow + inset-shadow press when `.active`) — so the two rows look like a single design system instead of a segmented-pill row next to a floating-chip row. The break-mode emerald override stays scoped to `.pomodoro-mode-btn[data-pomo-mode="…"]`, so preset pills (no `data-pomo-mode` attribute) never pick it up. Selecting a preset closes and deselects the Custom pill; opening Custom deselects both presets — exactly one pill reads "selected" at a time, same as the mode row.
+- **Presets share the mode-pill's exact visual language**: `.pomodoro-modes` and `.pomodoro-presets` are one merged container rule (bordered pill-group), and `.pomodoro-mode-btn`/`.pomodoro-preset-btn` are one merged button rule (transparent/muted by default, `--surface-tint-strong` hover, `--primary` fill + glow + inset-shadow press when `.active`) — so the two rows look like a single design system, same visual family as the `.filter-pill` chapter-filter row (§3.2) but with its own token set. The break-mode emerald override stays scoped to `.pomodoro-mode-btn[data-pomo-mode="…"]`, so preset pills (no `data-pomo-mode` attribute) never pick it up. Selecting a preset closes and deselects the Custom pill; opening Custom deselects both presets — exactly one pill reads "selected" at a time, same as the mode row.
 - **Custom-duration row** (`.pomodoro-custom-form`, shown when the `Custom` pill is active) mirrors the reference roadmap repo's `.custom-inputs-row`: a single bordered line (no background fill) holding inline `label + input` pairs (`.pomodoro-custom-group`) instead of stacked label-above-input blocks, with small centered bold number fields (`.pomodoro-custom-input`, `--bg-main` fill against the card so they read as distinct inset controls) and the Apply button (`.btn.btn-primary.btn-sm`) at the end of the row.
 - **Break mode recolors the whole control cluster, not just the ring**: `setMode()` toggles `.break` on `.pomodoro-widget` (not the ring wrapper alone), so `.pomodoro-widget.break` drives the ring, its glow, the active Short/Long Break pill, and the Start/Pause button all switching from `--primary` to `--accent-emerald` together.
-- **Interaction feedback follows the control's shape**: focus rings and the pressed state use `outline`/`box-shadow`, which clip to `border-radius`, never a background overlay or the bare UA rectangle — `.pomodoro-mode-btn` is in the shared `:focus-visible` group in `_main-layout.css` for this reason (`.pomodoro-preset-btn` gets the same treatment directly in `_pomodoro.css`). Preset/custom-apply controls get `disabled` while the timer is running (`setConfigEnabled()`) so a stray click can't silently reset an in-progress session; mode pills, preset pills, chips, and `.btn` all get hover/`:active` press states. The shared chip rules in `_main-layout.css` are scoped `button.chip` (not bare `.chip`) so the static `<span class="chip">` tags used as tags elsewhere (glossary chapter refs, lab API chips, resource-type chips) stay visually inert.
+- **Interaction feedback follows the control's shape**: focus rings and the pressed state use `outline`/`box-shadow`, which clip to `border-radius`, never a background overlay or the bare UA rectangle — `.pomodoro-mode-btn` is in the shared `:focus-visible` group in `_main-layout.css` for this reason (`.pomodoro-preset-btn` gets the same treatment directly in `_pomodoro.css`). Preset/custom-apply controls get `disabled` while the timer is running (`setConfigEnabled()`) so a stray click can't silently reset an in-progress session; mode pills, preset pills, filter pills, and `.btn` all get hover/`:active` press states. The interactive chapter-filter row uses `.filter-pill`/`.filter-pill.active` (`_main-layout.css`) — a rectangular `--radius-md` button, `--bg-card` resting, `--bg-card-hover` + lift on hover, solid `--primary` fill when selected. Static, non-interactive labels elsewhere (lab API tags, resource card chapter tags) use the separate `.tag`/`.tag--primary` classes (§3.7, §3.8) — small `--radius-sm` pills with a tinted `--primary-glow` fill, no hover/press state, so they read as inert data rather than controls.
 - **Metric row** (`#pomo-metrics.stat-grid`): three `.metric-card` tiles reusing the Dashboard's tile language (§3.3) — today's session count, today's focus minutes (+ hours, locale-formatted), and lifetime session count.
 - **History card** (`.pomodoro-history-card`): a `progress-card`-shaped card — `.progress-header` (title left, a `{count} sessions` subtitle right) over a reverse-chronological list of card-style rows (`.pomodoro-history-item`, `.item-row`-like shape), each with an emerald "+1 Pomodoro" `.tag`, timestamp, duration, and a compact 32px delete `.icon-btn` with a rose hover.
 - Session data (`state.pomodoroSessions`) also feeds the Dashboard's "focus hours" stat tile (§3.3) — but the timer UI itself lives only here, not on the Dashboard.
@@ -144,12 +144,12 @@ Sticky, `justify-content: space-between`. Children: `.header-brand` (logo + "Van
 ### 3.7. Deliverable Card (`.deliverable-card`)
 Shared card shell for the two per-chapter deliverables nested at the bottom of each chapter card — no separate chapter title/number (the parent card already shows those). Header (icon + title, `--deliverable-accent` tint on the icon) / body / footer (single `.deliverable-checkbox` + mark-complete label, checkbox `accent-color` matching the header icon). Two variants:
 - **`.deliverable-card--flashcard`** (purple accent, `cards` icon): body holds a link to `docs/content/flashcards_guide.md`'s prompt template; footer checkbox is "Generated & reviewed flashcards".
-- **`.deliverable-card--lab`** (primary accent, `flask` icon): body holds goal, requirements list, acceptance-criteria checklist as plain bullets, "APIs used" chip row linking to Glossary term ids; footer checkbox is "Mark lab complete". `tbd` chapters render only the header + a "lab not yet defined" notice in the body.
+- **`.deliverable-card--lab`** (primary accent, `flask` icon): body holds goal, requirements list, acceptance-criteria checklist as plain bullets, "APIs used" `.tag-row` linking to Glossary term ids; footer checkbox is "Mark lab complete". `tbd` chapters render only the header + a "lab not yet defined" notice in the body.
 
 Rendered in that order — flashcard card, then lab card — as the last two children of `.chapter-card-body`.
 
-### 3.8. Glossary Term Card (`.glossary-card`)
-Term name, one-line VI description, chapter chip(s) linking back to Chapters view, MDN/spec link buttons (`--accent-sky` outline buttons with external-link icon).
+### 3.8. Resource Card (`.resource-card`)
+The Resources tab renders one flat, chapter-sorted grid mixing glossary terms and reading-list links — no sub-tab, no bookmark/star (removed). Each card: tag row (`.resource-tag-row`) with a tinted type `.resource-badge` (`--term` purple, `--mdn` primary, `--spec` amber, `--article` sky, `--video` rose, `--demo` emerald, `--tool` muted — all via `color-mix(in srgb, var(--badge-color) 15%, transparent)` so tints stay theme-aware) plus chapter `.tag`/`.tag--primary` tag(s); bold title; a 3-line-clamped description (a term's definition, or a link's chapter label); footer separated by a hairline border with an optional secondary link (a term's Spec link) on the left and a primary-glow "open link" button (`.btn--resource`) on the right. Card chrome (bg/border/radius/hover lift) matches `.deliverable-card`'s sibling shape.
 
 ### 3.9. Quit Criteria Module Card (`.quit-module-card`)
 Same layout as the sibling project's decision-matrix card: chapter title header, `.quit-box--trigger` (amber, "Stop signal") and `.quit-box--pivot` (emerald, "Exit criteria") boxes side by side, stacking on mobile.
@@ -166,22 +166,26 @@ One flat `ICONS` dictionary, one raw SVG string per key (24×24 viewBox, `curren
 | Icon key | Used in |
 | :--- | :--- |
 | `book` | Chapters tab nav icon |
-| `bookOpen` | Section row "read" checkbox label, Dashboard "sections read" metric tile |
+| `bookOpen` | Section row "read" checkbox label, Dashboard "sections read" metric tile, Resources tab nav icon, resource card "MDN" type badge |
 | `flask` | Section row "hands-on" checkbox label, lab deliverable card header, Dashboard "hands-on" metric tile |
 | `target` | Dashboard "deliverables" metric tile |
 | `pomodoro` | Pomodoro tab nav icon, Dashboard "focus hours" metric tile, Pomodoro tab "today's sessions" metric tile |
 | `dashboard` | Dashboard tab nav icon |
-| `layers` | Dashboard chapter-progress-list section heading |
+| `layers` | Dashboard chapter-progress-list section heading, resource card "Spec" type badge |
 | `rocket` | Dashboard next-focus card tag |
 | `check` | Dashboard next-focus card CTA buttons |
 | `checkCircle` | Dashboard "all chapters done" state, Quit Criteria exit-criteria box, Pomodoro history row "+1 Pomodoro" tag |
 | `shieldAlert` | Quit Criteria tab nav icon |
 | `cards` | Flashcard deliverable card header (chapter card) |
-| `glossary` (magnifying glass over `{ }`) | Glossary tab nav icon |
+| `glossary` (magnifying glass over `{ }`) | Resource card "Term" type badge |
 | `close` | Pomodoro history row delete button |
 | `clock` | Pomodoro tab "today's minutes" metric tile |
 | `trophy` | Pomodoro tab "total sessions" metric tile |
 | `rotateCcw` | Pomodoro Reset button — deliberately not `reset` (that key is a trash-can glyph reused by the header's destructive Reset-data button) |
-| `chevronDown`, `skip`, `trash` | Defined in the dictionary, currently unused — free for future components |
+| `fileText` | Resource card "Article" type badge |
+| `video` | Resource card "Video" type badge |
+| `monitor` | Resource card "Demo" type badge |
+| `wrench` | Resource card "Tool" type badge |
+| `chevronDown`, `skip`, `trash`, `starOutline`, `starFilled` | Defined in the dictionary, currently unused — free for future components |
 
 All other icons (Export, Import, Reset, Sun/Moon theme, Star bookmark, external-link, search, warning-amber) are reused unchanged from the sibling project's dictionary.

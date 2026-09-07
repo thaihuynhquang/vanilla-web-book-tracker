@@ -1,10 +1,11 @@
-import { ROUTE_IDS } from "./constants";
+import { ROUTE_IDS, LEGACY_ROUTE_ALIASES } from "./constants";
 import type { RouteId } from "./types/appState";
 import { setActiveTabState, getState } from "./state/storage";
 import { renderAll } from "./renderer";
 
 function parseRoute(): RouteId {
-  const hash = window.location.hash.replace(/^#\/?/, "") as RouteId;
+  const raw = window.location.hash.replace(/^#\/?/, "");
+  const hash = (LEGACY_ROUTE_ALIASES[raw] ?? raw) as RouteId;
   return ROUTE_IDS.includes(hash) ? hash : "dashboard";
 }
 

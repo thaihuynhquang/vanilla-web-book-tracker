@@ -29,8 +29,7 @@ function renderNavTabIcons(): void {
     dashboard: icon("dashboard"),
     chapters: icon("book"),
     pomodoro: icon("pomodoro"),
-    glossary: icon("glossary"),
-    resources: icon("externalLink"),
+    resources: icon("bookOpen"),
     quitcriteria: icon("shieldAlert"),
   };
   document.querySelectorAll<HTMLElement>("[data-nav-tab]").forEach((tab) => {

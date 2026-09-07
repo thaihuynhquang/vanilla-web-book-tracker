@@ -63,7 +63,7 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   │   ├── _header.css
 │   │   ├── _tabs.css
 │   │   ├── _main-layout.css         # Shared primitives: .card, .stat-grid/.metric-card, .status-badge--dynamic, .tag, .item-row
-│   │   ├── _views.css               # Chapter cards, dashboard chapter-progress-list, lab/glossary/resource/quit cards
+│   │   ├── _views.css               # Chapter cards, dashboard chapter-progress-list, lab/resource/quit cards
 │   │   ├── _pomodoro.css            # Pomodoro tab: hero card, ring, mode pills, history
 │   │   └── _responsive.css
 │   ├── types/
@@ -75,15 +75,14 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   │   └── html.ts                 # escapeHtml() - required for any user-typed string interpolated into a view's HTML
 │   ├── views/
 │   │   ├── base.ts                   # BookView - shared connectedCallback/disconnectedCallback/render-listener lifecycle; skips refresh() while hidden
-│   │   ├── helpers.ts                # chapterFilterChipsHtml(), searchHeaderHtml()/bindSearch() - shared chip-filter and search-input markup, binds without losing focus/caret
+│   │   ├── helpers.ts                # chapterFilterChipsHtml(), searchHeaderHtml()/bindSearch() - shared filter-pill and search-input markup, binds without losing focus/caret
 │   │   ├── index.ts                  # registers all <book-view-*> custom elements
 │   │   ├── book-view-dashboard.ts    # <book-view-dashboard> - metric tiles, progress overview, next-focus card, per-chapter progress list
-│   │   ├── book-view-chapters.ts     # <book-view-chapters> - 15 always-expanded chapter cards, section checklists, chapter filter chips, per-chapter flashcard row + lab card
+│   │   ├── book-view-chapters.ts     # <book-view-chapters> - 15 always-expanded chapter cards, section checklists, chapter filter pills, per-chapter flashcard row + lab card
 │   │   ├── book-view-pomodoro.ts     # <book-view-pomodoro> - standalone Pomodoro timer tab (mode/ring/presets/history)
-│   │   ├── book-view-glossary.ts     # <book-view-glossary> - searchable Web API glossary
-│   │   ├── book-view-resources.ts    # <book-view-resources> - resource catalog with bookmarks
+│   │   ├── book-view-resources.ts    # <book-view-resources> - merged, searchable grid of glossary terms + resource links
 │   │   └── book-view-quitcriteria.ts # <book-view-quitcriteria> - stop-signal/exit-criteria matrix
-│   ├── constants.ts                # STORAGE_KEY, THEME_KEY, LANG_KEY, ROUTE_IDS, CHAPTER_STATUS_COLOR
+│   ├── constants.ts                # STORAGE_KEY, THEME_KEY, LANG_KEY, ROUTE_IDS, LEGACY_ROUTE_ALIASES, CHAPTER_STATUS_COLOR
 │   ├── main.ts                     # Bootstrap: load state -> apply theme -> router -> listeners -> renderAll()
 │   ├── progress.ts                 # calculateProgress(): read/hands-on/lab weighted %, active chapter, next section, per-chapter ChapterProgress[]
 │   ├── renderer.ts                 # registerRenderListener() / renderAll()

@@ -9,7 +9,7 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 
 ## 1. Purpose & Interactive Design Principles
 
-1. **Instant Reactive Feedback**: every interaction (checking read/hands-on, filtering chapters, starting the timer, bookmarking a resource, toggling theme/language) reflects immediately, zero page reload.
+1. **Instant Reactive Feedback**: every interaction (checking read/hands-on, filtering chapters, starting the timer, toggling theme/language) reflects immediately, zero page reload.
 2. **State-Driven Persistence**: every change updates the state store and persists to `localStorage` instantly.
 3. **Three-Axis Progress Model**: overall % = Read (40%) + Hands-on (40%) + Chapter deliverables — labs + flashcards (20%). Pomodoro sessions are tracked but excluded from this formula (see `architecture_guide.md` Pattern 4).
 
@@ -37,7 +37,7 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 - **UI Component**: `Export Action Component`, header bar.
 - **Flow**: serialize `AppState` to JSON → download as `vanilla-web-tracker-backup-YYYY-MM-DD.json` → success toast.
 - **AC**:
-  - [ ] File contains `read`, `handsOn`, `labDone`, `flashcardDone`, `resourceFlags`, `activeTab`, `theme`, `lang`, `pomodoroSettings`, `pomodoroSessions`.
+  - [ ] File contains `read`, `handsOn`, `labDone`, `flashcardDone`, `activeTab`, `theme`, `lang`, `pomodoroSettings`, `pomodoroSessions`.
 
 ### 2.4. Import Backup
 - **User Story**: As a reader, I want to import a JSON backup to restore progress on a new device.
@@ -49,13 +49,13 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 ### 2.5. Progress Reset
 - **User Story**: As a reader, I want to clear all progress and restart from chapter 1.
 - **UI Component**: `Reset Action Component`, header bar.
-- **Flow**: confirmation dialog → on confirm, clear `read`/`handsOn`/`labDone`/`flashcardDone`/`resourceFlags`, wipe `pomodoroSessions`, restore default timer settings (`25/5`), save, re-render to 0%.
+- **Flow**: confirmation dialog → on confirm, clear `read`/`handsOn`/`labDone`/`flashcardDone`, wipe `pomodoroSessions`, restore default timer settings (`25/5`), save, re-render to 0%.
 - **AC**:
   - [ ] All progress badges instantly return to 0%.
 
 ### 2.6. Hash Router & Dynamic Navigation Badge
 - **UI Component**: `Navigation Bar Component`.
-- **Flow**: URL hash format `#/view-name` (`dashboard`, `chapters`, `pomodoro`, `labs`, `glossary`, `resources`, `quitcriteria`) → toggle active tab + matching view container → `#badge-overall-pct` on the Dashboard tab shows the weighted overall %.
+- **Flow**: URL hash format `#/view-name` (`dashboard`, `chapters`, `pomodoro`, `resources`, `quitcriteria`) → toggle active tab + matching view container → `#badge-overall-pct` on the Dashboard tab shows the weighted overall %. Legacy `labs`/`glossary` hashes redirect through `LEGACY_ROUTE_ALIASES` (`constants.ts`) to `chapters`/`resources` respectively.
 - **AC**:
   - [ ] Direct URL hash access (e.g. `#/quitcriteria`) activates the correct tab.
 
@@ -97,7 +97,7 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 ### 4.1. Always-Expanded Chapter Cards
 - **UI Component**: `Chapters View Component` (`<book-view-chapters>`), 15 `.chapter-card`s, no accordion.
 - **Flow**: every chapter renders fully expanded — header shows chapter number, title, a `N sections · ~M min` meta line, a `.status-badge--dynamic` pill, and `completed/total (pct%)`; body shows an optional chapter-summary box, then all section rows. `tbd` chapters (14, 15) render a "content not yet published" placeholder instead of a section list.
-- **Filtering**: a chapter filter-chip row (`chapterFilterChipsHtml()`, `src/views/helpers.ts`) narrows the list to one chapter at a time, or back to "All chapters" — this is the primary way to navigate a ~140-section page now that there's no collapse/expand.
+- **Filtering**: a chapter filter-pill row (`chapterFilterChipsHtml()`, `src/views/helpers.ts`, `.filter-bar`/`.filter-pill`) narrows the list to one chapter at a time, or back to "All chapters" — this is the primary way to navigate a ~140-section page now that there's no collapse/expand.
 - **AC**:
   - [ ] Selected chapter filter and the "missing hands-on" filter (§4.3) compose — both can be active at once.
   - [ ] Toggling a section's read/hands-on checkbox re-renders the list without losing keyboard focus on that checkbox (the view records and restores `document.activeElement` around the `innerHTML` rebuild).
@@ -140,37 +140,23 @@ Both deliverables below render at the end of each chapter card in `Chapters View
 
 ---
 
-## 6. Glossary View Specifications (PRD-05)
+## 6. Resources View Specifications (PRD-06)
+
+Glossary terms and reading-list links render as one merged, flat grid — sorted by chapter, distinguished only by a `.resource-badge` type tag. There is no separate Glossary tab and no bookmark/star feature.
 
 ### 6.1. Search & Chapter Filter
-- **UI Component**: `Glossary View Component` (`#glossary-search-input`, chapter filter chips).
-- **Flow**: filter `GlossaryTerm[]` by name/description substring match and/or selected chapter id; re-render matching term cards; empty state when zero matches.
+- **UI Component**: `Resources View Component` (`#resources-search-input`, chapter filter pills).
+- **Flow**: filter the merged item list (glossary terms + resource links) by title/description substring match and/or selected chapter id; re-render matching cards; empty state when zero matches.
 - **AC**:
   - [ ] Filtering responds on `input` event with no full reload.
 
-### 6.2. Term Card Links
-- **UI Component**: `Glossary View Component` (term card, MDN/spec link buttons).
+### 6.2. Card Links
+- **UI Component**: `Resources View Component` (resource card, primary open-link button, optional secondary Spec link for terms).
 - **Flow**: links open with `target="_blank" rel="noopener noreferrer"`.
 
 ---
 
-## 7. Resources View Specifications (PRD-06)
-
-### 7.1. Chapter Filter
-- **UI Component**: `Resources View Component` (filter button group: "All Chapters" + per-chapter buttons).
-- **Flow**: clicking a filter limits visible resource cards to the selected chapter's `Resource[]`.
-
-### 7.2. Resource Bookmark Star
-- **UI Component**: `Resources View Component` (star SVG button on each resource card).
-- **Flow**: toggles `resourceFlags[resourceId]`, swaps outline/filled star icon.
-
-### 7.3. External Link Opener
-- **UI Component**: `Resources View Component` (open-link button).
-- **Flow**: opens in new tab with `rel="noopener noreferrer"`.
-
----
-
-## 8. Quit Criteria View Specifications (PRD-07)
+## 7. Quit Criteria View Specifications (PRD-07)
 
 ### 8.1. Combined Decision Matrix
 - **User Story**: As a reader, I want one place that tells me both "when should I skip this chapter" and "when am I good enough to move on without finishing every page."
@@ -187,7 +173,7 @@ Both deliverables below render at the end of each chapter card in `Chapters View
 
 ---
 
-## 9. Acceptance Criteria & Component Interaction Matrix
+## 8. Acceptance Criteria & Component Interaction Matrix
 
 | PRD Code | Feature | Component | Event | State Contract | Acceptance Criteria |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -201,21 +187,20 @@ Both deliverables below render at the end of each chapter card in `Chapters View
 | PRD-02.2 | Progress Overview Card | Dashboard | render | `calculateProgress()` | Single Overall % + one gradient bar. |
 | PRD-02.3 | Next Focus Card | Dashboard | `click` | `toggleRead()` / `toggleHandsOn()` | Marks recommended section/hands-on, recalculates. |
 | PRD-02.4 | Chapter Progress List | Dashboard | render | `calculateProgress().chapterProgresses` | Per-chapter status badge + % row, matches Chapters tab. |
-| PRD-03.1 | Always-Expanded Chapter Cards + Filter Chips | Chapters | `click` | local filter state | No accordion; `chapterFilterChipsHtml()` narrows to one chapter; `tbd` placeholder for ch.14–15. |
+| PRD-03.1 | Always-Expanded Chapter Cards + Filter Pills | Chapters | `click` | local filter state | No accordion; `chapterFilterChipsHtml()` narrows to one chapter; `tbd` placeholder for ch.14–15. |
 | PRD-03.2 | Section Checklist | Chapters | `change` | `toggleRead()` / `toggleHandsOn()` | Two independent persisted booleans per section; checkbox focus preserved across re-render. |
 | PRD-03.3 | Missing Hands-on Filter | Chapters | `click` | local filter state | Shows only read-but-not-handson sections, composes with the chapter filter. |
 | PRD-04.1 | Lab Checklist | Labs | `change` | `toggleLabDone()` | Contributes to 20%-weight axis. |
 | PRD-04.2 | Flashcard Task Checklist | Labs | `change` | `toggleFlashcardDone()` | Contributes to 20%-weight axis, no deck content stored. |
-| PRD-05.1 | Glossary Search | Glossary | `input` | `searchQuery` | Instant filter, empty state. |
-| PRD-06.1 | Resource Filter | Resources | `click` | `selectedChapterId` | Filters cards by chapter. |
-| PRD-06.2 | Resource Bookmark | Resources | `click` | `toggleResourceFlag()` | Toggles star icon + `resourceFlags`. |
+| PRD-06.1 | Resources Search | Resources | `input` | `searchQuery` | Instant filter across terms + links, empty state. |
+| PRD-06.2 | Resource Filter | Resources | `click` | `selectedChapterId` | Filters cards by chapter. |
 | PRD-07.1 | Combined Decision Matrix | Quit Criteria | render | none | 15 cards, stop signal + exit criteria. |
 | PRD-07.2 | Quit Criteria Search | Quit Criteria | `input` | `searchQuery` | Instant filter, empty state. |
 | PRD-08.1 | Pomodoro Timer | Pomodoro | `click` | `setPomodoroSettings()` / `addPomodoroSession()` | Countdown ring, chime + notification on completion, session logged. |
 
 ---
 
-## 10. Pomodoro View Specifications (PRD-08, own tab, tracked but not weighted)
+## 9. Pomodoro View Specifications (PRD-08, own tab, tracked but not weighted)
 
 - **UI Component**: `<book-view-pomodoro>`, its own nav tab (not embedded in Dashboard).
 - **Mechanics**: identical to the sibling roadmap tracker's Schedule view — mode switch Focus/Short Break/Long Break, `25/5`/`50/5`/Custom presets, countdown + SVG progress ring (ambient glow pulses while running, swaps to emerald on break), Web Audio chime, Web Notification, session history log with delete. The only difference from the sibling project: **no task-linking dropdown** (no per-task Pomodoro assignment, since reading isn't decomposed that finely).

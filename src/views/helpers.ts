@@ -3,9 +3,9 @@ import type { Chapter } from "../types/appState";
 
 export function chapterFilterChipsHtml(chapters: Chapter[], selectedId: string | null, allLabel: string): string {
   return `
-    <div class="chip-row chapter-filter-chips">
-      <button type="button" class="chip ${selectedId === null ? "chip--active" : ""}" data-chapter-filter="">${escapeHtml(allLabel)}</button>
-      ${chapters.map((c) => `<button type="button" class="chip ${selectedId === c.id ? "chip--active" : ""}" data-chapter-filter="${c.id}">${c.num}</button>`).join("")}
+    <div class="filter-bar">
+      <button type="button" class="filter-pill ${selectedId === null ? "active" : ""}" data-chapter-filter="">${escapeHtml(allLabel)}</button>
+      ${chapters.map((c) => `<button type="button" class="filter-pill ${selectedId === c.id ? "active" : ""}" data-chapter-filter="${c.id}">${c.num}</button>`).join("")}
     </div>
   `;
 }

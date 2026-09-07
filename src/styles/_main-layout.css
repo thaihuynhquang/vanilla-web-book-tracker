@@ -135,7 +135,7 @@
 
 .icon-btn,
 .btn,
-.chip,
+.filter-pill,
 .nav-tab,
 .pomodoro-mode-btn,
 input[type="checkbox"] {
@@ -144,7 +144,7 @@ input[type="checkbox"] {
 
 .icon-btn:focus-visible,
 .btn:focus-visible,
-.chip:focus-visible,
+.filter-pill:focus-visible,
 .nav-tab:focus-visible,
 .pomodoro-mode-btn:focus-visible,
 input[type="checkbox"]:focus-visible {
@@ -152,63 +152,53 @@ input[type="checkbox"]:focus-visible {
 }
 
 
-.chip {
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-lg);
+}
+
+.filter-pill {
   display: inline-flex;
   align-items: center;
-  padding: var(--space-3xs) var(--space-sm);
-  border-radius: var(--radius-full);
+  padding: var(--space-2xs) var(--space-md);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: var(--bg-card);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
-  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), color var(--transition-fast);
 }
 
-button.chip:hover:not(:disabled) {
+.filter-pill:hover:not(.active) {
   background: var(--bg-card-hover);
   border-color: var(--border-color-strong);
-  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
-button.chip:active:not(:disabled) {
-  transform: scale(0.97);
+.filter-pill:active {
+  transform: translateY(1px) scale(0.98);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
-button.chip:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.chip--active {
+.filter-pill.active {
   background: var(--primary);
   border-color: var(--primary);
   color: #fff;
 }
 
-button.chip--active:hover:not(:disabled) {
+.filter-pill.active:hover {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
-  color: #fff;
 }
 
-.chip--api,
-.chip--chapter {
-  background: var(--accent-purple);
-  border-color: var(--accent-purple);
-  color: #fff;
-}
-
-.chip-row {
+.tag-row {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2xs);
   margin: var(--space-xs) 0;
-}
-
-.chapter-filter-chips {
-  margin-bottom: var(--space-lg);
 }
 
 .empty-state {

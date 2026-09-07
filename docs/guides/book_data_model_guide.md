@@ -102,7 +102,6 @@ interface AppState {
   handsOn: Record<string, boolean>;   // key = section.id  -> "ch-7-s6"
   labDone: Record<string, boolean>;   // key = chapter.labId       -> "lab-ch-7"
   flashcardDone: Record<string, boolean>; // key = chapter.flashcardId -> "fc-ch-7"
-  resourceFlags: Record<string, boolean>; // bookmarks, key = resource.id
   activeTab: RouteId;
   theme: "dark" | "light";
   lang: "vi" | "en";

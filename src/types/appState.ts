@@ -77,7 +77,7 @@ export interface QuitCriteriaText {
   exitCriteria: string;
 }
 
-export type RouteId = "dashboard" | "chapters" | "pomodoro" | "glossary" | "resources" | "quitcriteria";
+export type RouteId = "dashboard" | "chapters" | "pomodoro" | "resources" | "quitcriteria";
 
 export type Theme = "dark" | "light";
 export type Lang = "vi" | "en";
@@ -98,7 +98,6 @@ export interface AppState {
   handsOn: Record<string, boolean>;
   labDone: Record<string, boolean>;
   flashcardDone: Record<string, boolean>;
-  resourceFlags: Record<string, boolean>;
   activeTab: RouteId;
   theme: Theme;
   lang: Lang;

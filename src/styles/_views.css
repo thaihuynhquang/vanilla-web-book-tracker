@@ -292,59 +292,22 @@
   font-size: var(--font-size-sm);
 }
 
-/* Glossary */
-.glossary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: var(--space-md);
-}
-
-.glossary-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: var(--space-md);
-  transition: all var(--transition-normal);
-}
-
-.glossary-card:hover {
-  border-color: var(--border-color-strong);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.glossary-term-name {
-  font-size: var(--font-size-base);
-  margin-bottom: var(--space-2xs);
-}
-
-.glossary-term-desc {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-xs);
-}
-
-.glossary-links {
-  display: flex;
-  gap: var(--space-xs);
-  margin-top: var(--space-xs);
-}
-
-/* Resources */
+/* Resources (glossary terms + resource links, one merged grid) */
 .resources-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-  gap: var(--space-md);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-lg);
 }
 
 .resource-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: var(--space-md);
+  padding: var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  justify-content: space-between;
+  gap: var(--space-md);
   transition: all var(--transition-normal);
 }
 
@@ -354,20 +317,106 @@
   box-shadow: var(--shadow-md);
 }
 
-.chip--type {
-  align-self: flex-start;
+.resource-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.resource-badge {
+  --badge-color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--badge-color) 15%, transparent);
+  color: var(--badge-color);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.resource-badge svg {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+.resource-badge--term {
+  --badge-color: var(--accent-purple);
+}
+
+.resource-badge--mdn {
+  --badge-color: var(--primary);
+}
+
+.resource-badge--spec {
+  --badge-color: var(--accent-amber);
+}
+
+.resource-badge--article {
+  --badge-color: var(--accent-sky);
+}
+
+.resource-badge--video {
+  --badge-color: var(--accent-rose);
+}
+
+.resource-badge--demo {
+  --badge-color: var(--accent-emerald);
+}
+
+.resource-badge--tool {
+  --badge-color: var(--text-muted);
 }
 
 .resource-title {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  text-wrap: balance;
 }
 
-.resource-actions {
+.resource-desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: var(--line-height-snug);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.resource-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-sm);
   margin-top: auto;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-color);
+}
+
+.resource-secondary-link {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+}
+
+.resource-secondary-link:hover {
+  color: var(--text-secondary);
+}
+
+.btn--resource {
+  background: var(--primary-glow);
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.btn--resource:hover {
+  background: var(--primary);
+  color: #fff;
 }
 
 /* Quit criteria */

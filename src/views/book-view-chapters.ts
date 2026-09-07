@@ -52,9 +52,9 @@ export class BookViewChapters extends BookView {
       this.refresh();
     });
 
-    this.querySelectorAll<HTMLElement>("[data-chapter-filter]").forEach((chip) => {
-      chip.addEventListener("click", () => {
-        this.selectedChapterId = chip.dataset.chapterFilter || null;
+    this.querySelectorAll<HTMLElement>("[data-chapter-filter]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        this.selectedChapterId = btn.dataset.chapterFilter || null;
         this.refresh();
       });
     });
@@ -203,7 +203,7 @@ export class BookViewChapters extends BookView {
           <ul class="lab-list lab-list--criteria">${lab.acceptanceCriteria.map((a) => `<li>${escapeHtml(a)}</li>`).join("")}</ul>
           ${lab.apisUsed.length > 0
             ? `<p class="lab-section-label">${t("chapters.lab.apisUsed")}</p>
-               <div class="chip-row">${lab.apisUsed.map((id) => `<span class="chip chip--api">${escapeHtml(glossaryById.get(id)?.name ?? id)}</span>`).join("")}</div>`
+               <div class="tag-row">${lab.apisUsed.map((id) => `<span class="tag tag--primary">${escapeHtml(glossaryById.get(id)?.name ?? id)}</span>`).join("")}</div>`
             : ""}
         </div>
         <div class="deliverable-card-footer">

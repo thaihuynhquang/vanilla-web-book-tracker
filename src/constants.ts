@@ -8,10 +8,15 @@ export const ROUTE_IDS: RouteId[] = [
   "dashboard",
   "chapters",
   "pomodoro",
-  "glossary",
   "resources",
   "quitcriteria",
 ];
+
+// Pre-merge saves/backups may still reference retired route ids.
+export const LEGACY_ROUTE_ALIASES: Record<string, RouteId> = {
+  glossary: "resources",
+  labs: "chapters",
+};
 
 export const CHAPTER_STATUS_COLOR: Record<"notStarted" | "inProgress" | "done", string> = {
   notStarted: "var(--text-muted)",
