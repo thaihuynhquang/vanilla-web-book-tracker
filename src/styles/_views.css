@@ -6,18 +6,7 @@
 }
 
 .chapter-progress-row {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: var(--space-sm) var(--space-md);
-}
-
-.chapter-progress-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-xs);
-  flex-wrap: wrap;
+  --card-surface: var(--bg-card);
 }
 
 .chapter-progress-title {
@@ -32,6 +21,12 @@
   font-size: var(--font-size-sm);
   color: var(--status-color, var(--primary));
   white-space: nowrap;
+}
+
+.chapter-progress-meta {
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
 }
 
 /* Chapter list */
@@ -116,20 +111,7 @@
 }
 
 .chapter-summary-box {
-  background: var(--surface-tint);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: var(--space-sm) var(--space-md);
   margin-bottom: var(--space-md);
-}
-
-.chapter-summary-title {
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-xs);
-  color: var(--primary);
-  margin-bottom: var(--space-2xs);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
 }
 
 .chapter-tbd-notice {
@@ -137,12 +119,14 @@
   font-size: var(--font-size-sm);
 }
 
-.item-row {
-  padding: var(--space-sm) var(--space-md);
-  margin-bottom: var(--space-xs);
+.item-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  min-width: 0;
 }
 
-.item-row-main {
+.item-row-title-line {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -150,14 +134,22 @@
 }
 
 .section-num {
-  font-weight: var(--font-weight-bold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.15rem var(--space-2xs);
+  border-radius: var(--radius-sm);
+  background: var(--surface-tint-strong);
   color: var(--text-muted);
+  font-weight: var(--font-weight-bold);
   font-size: var(--font-size-sm);
-  min-width: 42px;
+  font-variant-numeric: tabular-nums;
 }
 
 .section-title {
   flex: 1;
+  min-width: 0;
   font-weight: var(--font-weight-medium);
 }
 
@@ -181,18 +173,16 @@
   color: var(--accent-emerald);
 }
 
-.section-row-checks {
-  display: flex;
-  gap: var(--space-md);
-  margin-top: var(--space-xs);
-}
-
 .section-check {
   display: flex;
   align-items: center;
   gap: var(--space-2xs);
   font-size: var(--font-size-xs);
   color: var(--text-secondary);
+}
+
+.section-check input {
+  accent-color: var(--card-accent);
 }
 
 .section-check svg {
@@ -204,7 +194,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2xs);
-  margin-top: var(--space-xs);
 }
 
 .chapter-empty-filter {
@@ -213,44 +202,14 @@
   padding: var(--space-xs) 0;
 }
 
-/* Chapter card: flashcard + lab deliverables (shared card shell) */
+/* Chapter card: flashcard + lab deliverables (surface-card modifier) */
 .deliverable-card {
-  --deliverable-accent: var(--primary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  --card-surface: transparent;
   margin-top: var(--space-md);
-  overflow: hidden;
 }
 
 .deliverable-card--flashcard {
-  --deliverable-accent: var(--accent-purple);
-}
-
-.deliverable-card-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-card-hover);
-  font-weight: var(--font-weight-bold);
-}
-
-.deliverable-card-header svg {
-  color: var(--deliverable-accent);
-}
-
-.deliverable-card-title {
-  font-size: var(--font-size-base);
-}
-
-.deliverable-card-body {
-  padding: var(--space-sm) var(--space-md);
-}
-
-.deliverable-card-footer {
-  padding: var(--space-sm) var(--space-md);
-  border-top: 1px solid var(--border-color);
+  --card-accent: var(--accent-purple);
 }
 
 .deliverable-checkbox {
@@ -262,7 +221,7 @@
 }
 
 .deliverable-checkbox input {
-  accent-color: var(--deliverable-accent);
+  accent-color: var(--card-accent);
 }
 
 .flashcard-guide-link {

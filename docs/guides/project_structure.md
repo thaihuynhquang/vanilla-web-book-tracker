@@ -62,7 +62,7 @@ Detailed directory tree, file responsibilities, and module layout for the **Vani
 │   │   ├── _reset-base.css          # Includes prefers-reduced-motion guard
 │   │   ├── _header.css
 │   │   ├── _tabs.css
-│   │   ├── _main-layout.css         # Shared primitives: .card, .stat-grid/.metric-card, .status-badge--dynamic, .tag, .item-row
+│   │   ├── _main-layout.css         # Shared primitives: .card, .stat-grid/.metric-card, .status-badge--dynamic, .tag, .item-row, .surface-card
 │   │   ├── _views.css               # Chapter cards, dashboard chapter-progress-list, lab/resource/quit cards
 │   │   ├── _pomodoro.css            # Pomodoro tab: hero card, ring, mode pills, history
 │   │   └── _responsive.css

@@ -44,11 +44,6 @@
     font-size: 0.82rem;
   }
 
-  .section-row-checks {
-    flex-direction: column;
-    gap: var(--space-2xs);
-  }
-
   .chapter-card-header {
     padding-bottom: var(--space-2xs);
   }

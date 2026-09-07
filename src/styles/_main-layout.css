@@ -466,21 +466,92 @@ input[type="checkbox"]:focus-visible {
   border-color: transparent;
 }
 
+/* Shared card shell: header band + body + optional footer.
+   --card-surface  fill behind the whole card
+   --card-accent   drives header icon + control accent colors */
+.surface-card {
+  --card-accent: var(--primary);
+  --card-surface: var(--surface-tint);
+  background: var(--card-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.surface-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-card-hover);
+  font-weight: var(--font-weight-bold);
+  flex-wrap: wrap;
+}
+
+.surface-card-header svg {
+  color: var(--card-accent);
+  flex-shrink: 0;
+}
+
+.surface-card-title {
+  font-size: var(--font-size-base);
+  flex: 1;
+  min-width: 0;
+}
+
+.surface-card-body {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.surface-card-footer {
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--border-color);
+}
+
 /* Generic item row (checklists) */
 .item-row {
+  --card-accent: var(--text-muted);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-xs);
   border-radius: var(--radius-md);
-  background: var(--surface-tint);
   border: 1px solid var(--border-color);
+  border-left: 3px solid var(--card-accent);
+  background: var(--surface-tint);
   transition: all var(--transition-fast);
 }
 
 .item-row:hover {
   background: var(--bg-card-hover);
-  border-color: var(--border-color-strong);
+  border-top-color: var(--border-color-strong);
+  border-right-color: var(--border-color-strong);
+  border-bottom-color: var(--border-color-strong);
 }
 
-.item-row.checked {
-  opacity: 0.7;
+.item-row-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-xs);
+  border-top: 1px solid var(--border-color);
+}
+
+.item-row--read {
+  --card-accent: var(--accent-amber);
+}
+
+.item-row--done {
+  --card-accent: var(--accent-emerald);
+  opacity: 0.85;
   background: color-mix(in srgb, var(--accent-emerald) 5%, transparent);
 }
 

@@ -86,7 +86,7 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 ### 3.4. Per-Chapter Progress List
 - **User Story**: As a reader, I want to see at a glance which chapters are done, in progress, or untouched, without opening each one.
 - **UI Component**: `Dashboard View Component` (`.chapter-progress-list` → `.chapter-progress-row`, one per non-`tbd` chapter).
-- **Flow**: each row shows the chapter number/title, a `.status-badge--dynamic` pill (`notStarted`/`inProgress`/`done`) + `%`, and a thin progress bar — all derived from `ChapterProgress` (`calculateProgress().chapterProgresses`, see Pattern 4 in `architecture_guide.md`). The same `ChapterProgress` entries drive the Chapters view's per-card badge (§4.1), so the two views always agree for the same chapter.
+- **Flow**: each row is a `.surface-card` with a header band (chapter number/title, a `.status-badge--dynamic` pill (`notStarted`/`inProgress`/`done`) + `%`) and a body (a thin progress bar plus a `completed/total sections · ~N min` meta line) — all derived from `ChapterProgress` (`calculateProgress().chapterProgresses`, see Pattern 4 in `architecture_guide.md`). The same `ChapterProgress` entries drive the Chapters view's per-card badge (§4.1), so the two views always agree for the same chapter.
 - **AC**:
   - [ ] Status color/label/percentage for a given chapter are identical between the Dashboard row and the Chapters tab card.
 

@@ -10,6 +10,30 @@ export function chapterFilterChipsHtml(chapters: Chapter[], selectedId: string |
   `;
 }
 
+export function surfaceCardHtml(parts: {
+  className?: string;
+  accent?: string;
+  iconHtml?: string;
+  headerHtml: string;
+  bodyHtml: string;
+  footerHtml?: string;
+}): string {
+  const classes = ["surface-card", parts.className].filter(Boolean).join(" ");
+  const style = parts.accent ? ` style="--card-accent: ${parts.accent};"` : "";
+  return `
+    <div class="${classes}"${style}>
+      <div class="surface-card-header">
+        ${parts.iconHtml ?? ""}
+        ${parts.headerHtml}
+      </div>
+      <div class="surface-card-body">
+        ${parts.bodyHtml}
+      </div>
+      ${parts.footerHtml ? `<div class="surface-card-footer">${parts.footerHtml}</div>` : ""}
+    </div>
+  `;
+}
+
 export function searchHeaderHtml(inputId: string, title: string, placeholder: string): string {
   return `
     <section class="view-header">

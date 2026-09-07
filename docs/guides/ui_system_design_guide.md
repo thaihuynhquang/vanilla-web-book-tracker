@@ -23,8 +23,8 @@ Reuse the exact token set below (same as the sibling project, plus two book-trac
 | `--bg-glass` | `rgba(17, 24, 39, 0.75)` | `rgba(255, 255, 255, 0.85)` | Sticky header glass (`backdrop-filter: blur(12px)`) |
 | `--border-color` | `rgba(255, 255, 255, 0.1)` | `rgba(0, 0, 0, 0.1)` | Card/input/separator border |
 | `--border-color-strong` | `rgba(255, 255, 255, 0.2)` | `rgba(0, 0, 0, 0.18)` | Hover/active border |
-| `--surface-tint` | `rgba(255, 255, 255, 0.02)` | `rgba(0, 0, 0, 0.02)` | Subtle elevation fill (`.item-row`, `.chapter-summary-box`) — theme-aware, unlike a hardcoded white-alpha tint |
-| `--surface-tint-strong` | `rgba(255, 255, 255, 0.06)` | `rgba(0, 0, 0, 0.04)` | Slightly stronger tint (`.tag`) |
+| `--surface-tint` | `rgba(255, 255, 255, 0.02)` | `rgba(0, 0, 0, 0.02)` | Subtle elevation fill — `.item-row`'s resting background, and the default `--card-surface` for `.surface-card` (`.chapter-summary-box`) — theme-aware, unlike a hardcoded white-alpha tint |
+| `--surface-tint-strong` | `rgba(255, 255, 255, 0.06)` | `rgba(0, 0, 0, 0.04)` | Slightly stronger tint (`.tag`, `.section-num` chip) |
 | `--text-primary` | `#f9fafb` | `#0f172a` | Headings, primary content |
 | `--text-secondary` | `#9ca3af` | `#475569` | Descriptions, inactive tabs |
 | `--text-muted` | `#6b7280` | `#94a3b8` | Metadata, footers, timestamps |
@@ -92,7 +92,7 @@ src/styles/
 ├── _header.css       # -> @layer components
 ├── _tabs.css          # -> @layer components
 ├── _main-layout.css  # -> @layer components — shared primitives: .card, .stat-grid/.metric-card,
-│                       #   .status-badge--dynamic, .tag, .item-row, .progress-bar-fill--dynamic
+│                       #   .status-badge--dynamic, .tag, .item-row, .surface-card, .progress-bar-fill--dynamic
 ├── _views.css         # -> @layer views (chapter cards, dashboard chapter-progress-list, lab cards,
 │                       #   resource cards, quit-matrix)
 ├── _pomodoro.css      # -> @layer views (Pomodoro tab: hero card, ring, mode pills, history)
@@ -113,22 +113,23 @@ Sticky, `justify-content: space-between`. Children: `.header-brand` (logo + "Van
 - **Stat grid** (`.stat-grid` → `.metric-card` × 4): sections read (`N/95`), hands-on sections done, chapter deliverables done (labs + flashcards), total Pomodoro focus hours. Each tile is an icon square (`.metric-icon--primary/--amber/--sky`, 15%-alpha tint of the accent color) + a big value + a muted label. There is deliberately **no** "overall %" tile — it would duplicate the progress card immediately below.
 - **Progress overview card** (`.card` → `.progress-header` + one `.progress-bar-track`): title + subtitle on the left, the big overall % (`.progress-percentage`, emerald) on the right, one full-width gradient bar underneath (`.progress-bar-fill--dynamic`, primary→emerald gradient when no `--status-color` is set). No per-axis breakdown bars — kept to a single glanceable stat, same shape as the sibling project's `.progress-card`.
 - **Next-focus card** (`.card--accent-primary`, or `.card--accent-emerald` when everything is done): rocket-tagged callout naming the active chapter and either the next unread section ("Mark as read") or the next section still missing hands-on ("Mark hands-on"), whichever applies. Recalculated from `calculateProgress()` on every state change.
-- **Chapter progress list** (`.chapter-progress-list` → `.chapter-progress-row`): one compact row per non-`tbd` chapter — number badge, title, `.status-badge--dynamic` pill + `%`, and a thin `.progress-bar-track--sm` bar. Status/color come from `ChapterProgress.status`/`statusColor` (`src/progress.ts`) — see §3.4.
+- **Chapter progress list** (`.chapter-progress-list` → `.chapter-progress-row`): one `.surface-card` per non-`tbd` chapter. Header band: number badge, title, `.status-badge--dynamic` pill + `%`. Body: a thin `.progress-bar-track--sm` bar plus a `.chapter-progress-meta` line (`completed/total sections · ~N min`, from `ChapterProgress.completedCount`/`total`/`estMinutes`). `--card-accent` is set to the chapter's `statusColor`; `--card-surface` overrides to `--bg-card` so the row still reads as a raised card against the page background. Status/color come from `ChapterProgress.status`/`statusColor` (`src/progress.ts`) — see §3.4.
 
 ### 3.4. Chapter Card (`.chapter-card`)
-- **Layout**: every chapter renders **fully expanded** — no accordion, no chevron. Header row: number badge, title + a meta line (`N sections · ~M min`, from `Section.estMinutes`), and on the right a `.status-badge--dynamic` pill + `completed/total (pct%)`. Below the header: a thin `.progress-bar-track--sm` bar, then an optional `.chapter-summary-box` (renders `Chapter.summary`), then the section list, then the chapter's flashcard card and lab card (§3.7) as the last two items in `.chapter-card-body`.
+- **Layout**: every chapter renders **fully expanded** — no accordion, no chevron. Header row: number badge, title + a meta line (`N sections · ~M min`, from `Section.estMinutes`), and on the right a `.status-badge--dynamic` pill + `completed/total (pct%)`. Below the header: a thin `.progress-bar-track--sm` bar, then an optional `.chapter-summary-box` — a `.surface-card` with a `fileText`-icon header band ("Tổng quan chương"/"Chapter overview") and a body paragraph rendering `Chapter.summary` — then the section list, then the chapter's flashcard card and lab card (§3.7) as the last two items in `.chapter-card-body`.
 - **Status color system**: each chapter computes a `ChapterStatus` (`"notStarted" | "inProgress" | "done"`, `src/progress.ts` `buildChapterProgress()`) from `(read + handsOn) / (2 × sectionCount)`, mapped to a CSS color via `CHAPTER_STATUS_COLOR` (`src/constants.ts`). That color is passed down as an inline `--status-color` custom property; `.status-badge--dynamic` and `.progress-bar-fill--dynamic` derive their fill/border from it with `color-mix()` (20%/40% alpha) — one value drives the pill, the percentage text, and the bar. The same system feeds both this card and the Dashboard's chapter-progress-list row for the same chapter, so the two always agree.
 - **Perf**: `content-visibility: auto; contain-intrinsic-size: auto 320px` on `.chapter-card`, since all ~13 chapters (up to ~140 sections) render at once. Off-screen cards skip layout/paint until scrolled near.
 - **Focus preservation**: toggling a section, lab, or flashcard checkbox triggers a full `refresh()` (the view re-renders `innerHTML` from a template string, per Pattern 2). `book-view-chapters.ts` records `document.activeElement`'s `data-read-id`/`data-handson-id`/`data-lab-id`/`data-flashcard-id` before the rebuild and re-focuses the matching input after, so keyboard navigation isn't lost mid-list.
 - **`tbd` state**: card renders with a muted `.chapter-card--tbd` style, no status badge/progress bar, body replaced by a one-line "Not yet published by Manning" notice, still followed by the flashcard and lab deliverable cards (labs render their own "not yet defined" placeholder, §3.7).
 
 ### 3.5. Section Row (`.item-row`)
-- **Layout**: `.item-row-main` — section number + title + a `.section-badge` (not-started/read/done) + a `.tag` showing `estMinutes`. Below: `.section-row-checks`, two `.section-check` labels (open-book icon for read, flask icon for hands-on) each wrapping a native checkbox (`data-read-id` / `data-handson-id`, both set to the section's `id`).
+- **Layout**: a compact 2-column grid, not the `.surface-card` header+body anatomy — with ~140 rows rendered per page, a header band per row would roughly double the Chapters tab's height. Columns: `.section-num` (a small tabular-nums chip, `--surface-tint-strong` fill) and `.item-row-main` (title line — `.section-title` + `.section-badge` + a `.tag` showing `estMinutes` — with `.subsection-list` stacked below when present). Below both columns, `.item-row-footer` spans the full row width behind a hairline `border-top` — a `space-between` flex row holding the two `.section-check` labels (open-book icon for read / flask icon for hands-on, each wrapping a native checkbox — `data-read-id` / `data-handson-id`, both set to the section's `id`) pinned to opposite ends so the checkboxes land at a consistent x-offset across every row regardless of label length; wraps below ~480px via `flex-wrap`.
+- **Checkbox tint**: `.section-check input` gets `accent-color: var(--card-accent)`, so the checkbox itself picks up the row's read/done accent instead of the browser default — same idiom as `.deliverable-checkbox input` (§3.7).
 - **Sub-section list** (`.subsection-list`): a row of `.tag` pills, one per sub-section — muted, no interactive control, purely a reading aid.
-- **Status badges** (`.section-badge`):
-  - Not started: `--text-muted` outline pill, "Chưa đọc"/"Not started".
-  - Read only: `--accent-amber` pill, "Đã đọc"/"Read".
-  - Read + hands-on: `--accent-emerald` pill, "Hoàn thành"/"Done" — the row itself also gets `.item-row.checked` (slightly dimmed, faint emerald tint).
+- **State via `--card-accent`**: the row carries a 3px `border-left` colored by `--card-accent` (`--text-muted` at rest), the same local-token idiom `.surface-card` uses for its header icon — `.item-row` just applies it to a border instead of an icon.
+  - Not started: `--text-muted` outline badge, "Chưa đọc"/"Not started"; row border stays muted.
+  - Read only: `--accent-amber` badge, "Đã đọc"/"Read"; row gets `.item-row--read` (`--card-accent: var(--accent-amber)`).
+  - Read + hands-on: `--accent-emerald` badge, "Hoàn thành"/"Done"; row gets `.item-row--done` (`--card-accent: var(--accent-emerald)`, `opacity: 0.85`, faint emerald tint).
 
 ### 3.6. Pomodoro View (`<book-view-pomodoro>`) — own tab
 - **Layout**: hero card, metric row, and history card all span the same full content width (no card-specific `max-width`) so the tab lines up with every other tab's cards — `.pomodoro-container > .card, .pomodoro-container > .stat-grid { margin-bottom: 0 }` avoids the double-margin (container `gap` + `.card`'s own `margin-bottom`) that used to throw the cards' vertical rhythm off.
@@ -142,9 +143,9 @@ Sticky, `justify-content: space-between`. Children: `.header-brand` (logo + "Van
 - Session data (`state.pomodoroSessions`) also feeds the Dashboard's "focus hours" stat tile (§3.3) — but the timer UI itself lives only here, not on the Dashboard.
 
 ### 3.7. Deliverable Card (`.deliverable-card`)
-Shared card shell for the two per-chapter deliverables nested at the bottom of each chapter card — no separate chapter title/number (the parent card already shows those). Header (icon + title, `--deliverable-accent` tint on the icon) / body / footer (single `.deliverable-checkbox` + mark-complete label, checkbox `accent-color` matching the header icon). Two variants:
-- **`.deliverable-card--flashcard`** (purple accent, `cards` icon): body holds a link to `docs/content/flashcards_guide.md`'s prompt template; footer checkbox is "Generated & reviewed flashcards".
-- **`.deliverable-card--lab`** (primary accent, `flask` icon): body holds goal, requirements list, acceptance-criteria checklist as plain bullets, "APIs used" `.tag-row` linking to Glossary term ids; footer checkbox is "Mark lab complete". `tbd` chapters render only the header + a "lab not yet defined" notice in the body.
+A thin modifier over `.surface-card` (§3.4's summary box and the Dashboard's chapter-progress-row are the other two consumers of that base) — `--card-surface: transparent` keeps its original flush-with-parent look. Shared for the two per-chapter deliverables nested at the bottom of each chapter card — no separate chapter title/number (the parent card already shows those). Header (icon + title, `--card-accent` tint on the icon) / body / footer (single `.deliverable-checkbox` + mark-complete label, checkbox `accent-color` matching the header icon). Two variants:
+- **`.deliverable-card--flashcard`** (purple accent via `--card-accent: var(--accent-purple)`, `cards` icon): body holds a link to `docs/content/flashcards_guide.md`'s prompt template; footer checkbox is "Generated & reviewed flashcards".
+- **Lab card** (default `--card-accent` = `--primary`, `flask` icon, no dedicated modifier class): body holds goal, requirements list, acceptance-criteria checklist as plain bullets, "APIs used" `.tag-row` linking to Glossary term ids; footer checkbox is "Mark lab complete". `tbd` chapters render only the header + a "lab not yet defined" notice in the body (no footer).
 
 Rendered in that order — flashcard card, then lab card — as the last two children of `.chapter-card-body`.
 

@@ -5,6 +5,7 @@ import { t } from "../i18n";
 import { icon } from "../utils/icons";
 import { escapeHtml } from "../utils/html";
 import { TOTAL_SECTIONS } from "../constants";
+import { surfaceCardHtml } from "./helpers";
 import { BookView } from "./base";
 
 export class BookViewDashboard extends BookView {
@@ -55,20 +56,23 @@ export class BookViewDashboard extends BookView {
       <div class="chapter-progress-list">
         ${stats.chapterProgresses
           .filter((c) => !c.chapter.tbd)
-          .map(
-            (cp) => `
-              <div class="chapter-progress-row">
-                <div class="chapter-progress-header">
-                  <span class="chapter-number-badge">${escapeHtml(String(cp.chapter.num))}</span>
-                  <span class="chapter-progress-title">${escapeHtml(cp.chapter.title)}</span>
-                  <span class="status-badge status-badge--dynamic" style="--status-color: ${cp.statusColor};">${t(`status.${cp.status}`)}</span>
-                  <span class="chapter-progress-pct" style="--status-color: ${cp.statusColor};">${cp.percentage}%</span>
-                </div>
+          .map((cp) =>
+            surfaceCardHtml({
+              className: "chapter-progress-row",
+              accent: cp.statusColor,
+              iconHtml: `<span class="chapter-number-badge">${escapeHtml(String(cp.chapter.num))}</span>`,
+              headerHtml: `
+                <span class="chapter-progress-title">${escapeHtml(cp.chapter.title)}</span>
+                <span class="status-badge status-badge--dynamic" style="--status-color: ${cp.statusColor};">${t(`status.${cp.status}`)}</span>
+                <span class="chapter-progress-pct" style="--status-color: ${cp.statusColor};">${cp.percentage}%</span>
+              `,
+              bodyHtml: `
                 <div class="progress-bar-track progress-bar-track--sm">
                   <div class="progress-bar-fill progress-bar-fill--dynamic" style="--progress: ${cp.percentage}%; --status-color: ${cp.statusColor};"></div>
                 </div>
-              </div>
-            `,
+                <p class="chapter-progress-meta">${cp.completedCount}/${cp.total} ${t("chapters.meta.sections")} · ~${cp.estMinutes} ${t("chapters.meta.estMinutes")}</p>
+              `,
+            }),
           )
           .join("")}
       </div>
