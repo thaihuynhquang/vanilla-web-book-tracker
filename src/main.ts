@@ -8,12 +8,7 @@ import { icon } from "./utils/icons";
 import { exportStateJSON, importState } from "./actions/backup";
 import { resetProgress } from "./state/storage";
 import { showToast } from "./toast";
-import { calculateProgress } from "./progress";
-
-function updateNavBadge(): void {
-  const badge = document.getElementById("badge-overall-pct");
-  if (badge) badge.textContent = `${Math.round(calculateProgress().overallPct)}%`;
-}
+import { updateNavBadge } from "./nav-badge";
 
 function renderHeaderIcons(): void {
   const state = getState();

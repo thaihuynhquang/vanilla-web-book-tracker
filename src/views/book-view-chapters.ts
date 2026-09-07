@@ -1,7 +1,7 @@
 import { getChapters, getLabs, getGlossary } from "../data/bookData";
 import { getState, toggleRead, toggleHandsOn, toggleLabDone, toggleFlashcardDone } from "../state/storage";
 import { calculateProgress, type ChapterProgress } from "../progress";
-import { renderAll } from "../renderer";
+import { updateNavBadge } from "../nav-badge";
 import { t } from "../i18n";
 import { icon } from "../utils/icons";
 import { escapeHtml } from "../utils/html";
@@ -59,33 +59,7 @@ export class BookViewChapters extends BookView {
       });
     });
 
-    this.querySelectorAll<HTMLInputElement>("[data-read-id]").forEach((input) => {
-      input.addEventListener("change", () => {
-        toggleRead(input.dataset.readId!);
-        renderAll();
-      });
-    });
-
-    this.querySelectorAll<HTMLInputElement>("[data-handson-id]").forEach((input) => {
-      input.addEventListener("change", () => {
-        toggleHandsOn(input.dataset.handsonId!);
-        renderAll();
-      });
-    });
-
-    this.querySelectorAll<HTMLInputElement>("[data-lab-id]").forEach((input) => {
-      input.addEventListener("change", () => {
-        toggleLabDone(input.dataset.labId!);
-        renderAll();
-      });
-    });
-
-    this.querySelectorAll<HTMLInputElement>("[data-flashcard-id]").forEach((input) => {
-      input.addEventListener("change", () => {
-        toggleFlashcardDone(input.dataset.flashcardId!);
-        renderAll();
-      });
-    });
+    this.bindChecklistListeners(this);
 
     if (focusedReadId) {
       this.querySelector<HTMLInputElement>(`[data-read-id="${CSS.escape(focusedReadId)}"]`)?.focus();
@@ -98,6 +72,77 @@ export class BookViewChapters extends BookView {
     }
   }
 
+  // Scoped to `root` so it can bind either the whole view (full refresh) or a single
+  // freshly-swapped `.chapter-card` (patchChapterCard) without re-binding every input.
+  private bindChecklistListeners(root: ParentNode): void {
+    root.querySelectorAll<HTMLInputElement>("[data-read-id]").forEach((input) => {
+      input.addEventListener("change", () => {
+        toggleRead(input.dataset.readId!);
+        this.afterChecklistToggle(input.dataset.chapterId!, "data-read-id", input.dataset.readId!);
+      });
+    });
+
+    root.querySelectorAll<HTMLInputElement>("[data-handson-id]").forEach((input) => {
+      input.addEventListener("change", () => {
+        toggleHandsOn(input.dataset.handsonId!);
+        this.afterChecklistToggle(input.dataset.chapterId!, "data-handson-id", input.dataset.handsonId!);
+      });
+    });
+
+    root.querySelectorAll<HTMLInputElement>("[data-lab-id]").forEach((input) => {
+      input.addEventListener("change", () => {
+        toggleLabDone(input.dataset.labId!);
+        this.afterChecklistToggle(input.dataset.chapterId!, "data-lab-id", input.dataset.labId!);
+      });
+    });
+
+    root.querySelectorAll<HTMLInputElement>("[data-flashcard-id]").forEach((input) => {
+      input.addEventListener("change", () => {
+        toggleFlashcardDone(input.dataset.flashcardId!);
+        this.afterChecklistToggle(input.dataset.chapterId!, "data-flashcard-id", input.dataset.flashcardId!);
+      });
+    });
+  }
+
+  // A section/lab/flashcard toggle only ever changes one chapter's data. Patching just
+  // that chapter's card (instead of renderAll() -> a full-view rebuild) keeps every other
+  // .chapter-card's DOM node untouched, so content-visibility's remembered size for them
+  // is never invalidated and the page never jumps (see docs/guides/ui_system_design_guide.md §3.4 Perf).
+  private afterChecklistToggle(chapterId: string, refocusAttr: string, refocusId: string): void {
+    updateNavBadge();
+    this.patchChapterCard(chapterId, { attr: refocusAttr, id: refocusId });
+  }
+
+  private patchChapterCard(chapterId: string, refocus: { attr: string; id: string }): void {
+    const oldCard = this.querySelector(`[data-chapter-id="${CSS.escape(chapterId)}"]`);
+    if (!oldCard) return;
+
+    const state = getState();
+    const stats = calculateProgress();
+    const chapter = getChapters().find((c) => c.id === chapterId);
+    const progress = stats.chapterProgresses.find((cp) => cp.chapter.id === chapterId);
+    if (!chapter || !progress) return;
+
+    const labByChapterId = new Map(getLabs().map((l) => [l.chapterId, l]));
+    const glossaryById = new Map(getGlossary().map((g) => [g.id, g]));
+
+    const template = document.createElement("template");
+    template.innerHTML = this.chapterCardHtml(chapter, progress, state, labByChapterId, glossaryById).trim();
+    const newCard = template.content.firstElementChild as HTMLElement;
+
+    // The new card has no "remembered size" yet, so content-visibility:auto would size it via
+    // the 320px contain-intrinsic-size placeholder until the browser's next (lazy, unpredictably
+    // timed) proximity check — even though it's the one card guaranteed to be on/near screen.
+    // Pin it to `visible` so it always lays out at its real size. This one chapter loses the
+    // off-screen-skip optimization for the rest of the session, but every other (untouched)
+    // card keeps it, and a full rebuild (tab switch, filter change, language switch) recreates
+    // every card fresh from `chapterCardHtml()` without this override, restoring `auto` for all.
+    newCard.style.contentVisibility = "visible";
+    oldCard.replaceWith(newCard);
+    this.bindChecklistListeners(newCard);
+    newCard.querySelector<HTMLInputElement>(`[${refocus.attr}="${CSS.escape(refocus.id)}"]`)?.focus({ preventScroll: true });
+  }
+
   private chapterCardHtml(
     chapter: ChapterProgress["chapter"],
     progress: ChapterProgress,
@@ -107,7 +152,7 @@ export class BookViewChapters extends BookView {
   ): string {
     if (chapter.tbd) {
       return `
-        <div class="chapter-card chapter-card--tbd">
+        <div class="chapter-card chapter-card--tbd" data-chapter-id="${escapeHtml(chapter.id)}">
           <div class="chapter-card-header">
             <span class="chapter-number-badge">${escapeHtml(String(chapter.num))}</span>
             <span class="chapter-card-title">${escapeHtml(chapter.title)}</span>
@@ -124,7 +169,7 @@ export class BookViewChapters extends BookView {
       : chapter.sections;
 
     return `
-      <div class="chapter-card">
+      <div class="chapter-card" data-chapter-id="${escapeHtml(chapter.id)}">
         <div class="chapter-card-header">
           <span class="chapter-number-badge">${escapeHtml(String(chapter.num))}</span>
           <div class="chapter-card-title-group">
@@ -141,7 +186,7 @@ export class BookViewChapters extends BookView {
         </div>
         <div class="chapter-card-body">
           ${chapter.summary ? this.summaryBoxHtml(chapter.summary) : ""}
-          ${visibleSections.map((s) => this.sectionRowHtml(s, state)).join("") || `<p class="chapter-empty-filter">—</p>`}
+          ${visibleSections.map((s) => this.sectionRowHtml(s, chapter.id, state)).join("") || `<p class="chapter-empty-filter">—</p>`}
           ${this.flashcardBlockHtml(chapter, state)}
           ${this.labBlockHtml(labByChapterId.get(chapter.id), glossaryById, state)}
         </div>
@@ -168,7 +213,7 @@ export class BookViewChapters extends BookView {
       bodyHtml: `<p><a href="${FLASHCARDS_GUIDE_URL}" target="_blank" rel="noopener noreferrer" class="flashcard-guide-link">${t("chapters.flashcard.guideLink")}</a></p>`,
       footerHtml: `
         <label class="deliverable-checkbox">
-          <input type="checkbox" data-flashcard-id="${escapeHtml(chapter.flashcardId)}" ${isFlashcardDone ? "checked" : ""}/>
+          <input type="checkbox" data-flashcard-id="${escapeHtml(chapter.flashcardId)}" data-chapter-id="${escapeHtml(chapter.id)}" ${isFlashcardDone ? "checked" : ""}/>
           ${t("chapters.flashcard.markDone")}
         </label>
       `,
@@ -205,14 +250,14 @@ export class BookViewChapters extends BookView {
       `,
       footerHtml: `
         <label class="deliverable-checkbox">
-          <input type="checkbox" data-lab-id="${escapeHtml(lab.id)}" ${isLabDone ? "checked" : ""}/>
+          <input type="checkbox" data-lab-id="${escapeHtml(lab.id)}" data-chapter-id="${escapeHtml(lab.chapterId)}" ${isLabDone ? "checked" : ""}/>
           ${t("chapters.lab.markDone")}
         </label>
       `,
     });
   }
 
-  private sectionRowHtml(section: Section, state: ReturnType<typeof getState>): string {
+  private sectionRowHtml(section: Section, chapterId: string, state: ReturnType<typeof getState>): string {
     const isRead = !!state.read[section.id];
     const isHandsOn = !!state.handsOn[section.id];
     const badge = isRead && isHandsOn
@@ -239,12 +284,12 @@ export class BookViewChapters extends BookView {
         <div class="item-row-footer">
           <label class="section-check">
             ${icon("bookOpen")}
-            <input type="checkbox" data-read-id="${escapeHtml(section.id)}" ${isRead ? "checked" : ""}/>
+            <input type="checkbox" data-read-id="${escapeHtml(section.id)}" data-chapter-id="${escapeHtml(chapterId)}" ${isRead ? "checked" : ""}/>
             <span>${t("chapters.section.read")}</span>
           </label>
           <label class="section-check">
             ${icon("flask")}
-            <input type="checkbox" data-handson-id="${escapeHtml(section.id)}" ${isHandsOn ? "checked" : ""}/>
+            <input type="checkbox" data-handson-id="${escapeHtml(section.id)}" data-chapter-id="${escapeHtml(chapterId)}" ${isHandsOn ? "checked" : ""}/>
             <span>${t("chapters.section.handson")}</span>
           </label>
         </div>
