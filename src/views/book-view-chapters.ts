@@ -11,8 +11,8 @@ import type { Section, Lab } from "../types/appState";
 import { BookView } from "./base";
 
 export class BookViewChapters extends BookView {
-  private missingHandsonOnly = false;
   private selectedChapterId: string | null = null;
+  private collapsedChapterIds = new Set<string>();
 
   refresh(): void {
     const chapters = getChapters();
@@ -36,21 +36,12 @@ export class BookViewChapters extends BookView {
           <h2 class="section-heading-title">${t("chapters.title")}</h2>
           <p class="section-heading-subtitle">${t("chapters.header.subtitle")}</p>
         </div>
-        <label class="filter-toggle">
-          <input type="checkbox" id="filter-missing-handson" ${this.missingHandsonOnly ? "checked" : ""}/>
-          ${t("chapters.filter.missingHandson")}
-        </label>
       </section>
       ${chapterFilterChipsHtml(chapters, this.selectedChapterId, t("chapters.filter.allChapters"))}
       <div class="chapter-accordion">
         ${visibleChapters.map((c) => this.chapterCardHtml(c, stats.chapterProgresses.find((cp) => cp.chapter.id === c.id)!, state, labByChapterId, glossaryById)).join("")}
       </div>
     `;
-
-    this.querySelector("#filter-missing-handson")?.addEventListener("change", (e) => {
-      this.missingHandsonOnly = (e.target as HTMLInputElement).checked;
-      this.refresh();
-    });
 
     this.querySelectorAll<HTMLElement>("[data-chapter-filter]").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -60,6 +51,7 @@ export class BookViewChapters extends BookView {
     });
 
     this.bindChecklistListeners(this);
+    this.bindSectionToggles(this);
 
     if (focusedReadId) {
       this.querySelector<HTMLInputElement>(`[data-read-id="${CSS.escape(focusedReadId)}"]`)?.focus();
@@ -104,6 +96,22 @@ export class BookViewChapters extends BookView {
     });
   }
 
+  // Scoped to `root` for the same reason as bindChecklistListeners: needs to bind either the
+  // whole view or a single freshly-swapped `.chapter-card`.
+  private bindSectionToggles(root: ParentNode): void {
+    root.querySelectorAll<HTMLButtonElement>("[data-sections-toggle]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.sectionsToggle!;
+        const collapsed = !this.collapsedChapterIds.has(id);
+        if (collapsed) this.collapsedChapterIds.add(id);
+        else this.collapsedChapterIds.delete(id);
+        btn.setAttribute("aria-expanded", String(!collapsed));
+        const list = this.querySelector<HTMLElement>(`[data-section-list="${CSS.escape(id)}"]`);
+        if (list) list.hidden = collapsed;
+      });
+    });
+  }
+
   // A section/lab/flashcard toggle only ever changes one chapter's data. Patching just
   // that chapter's card (instead of renderAll() -> a full-view rebuild) keeps every other
   // .chapter-card's DOM node untouched, so content-visibility's remembered size for them
@@ -140,6 +148,7 @@ export class BookViewChapters extends BookView {
     newCard.style.contentVisibility = "visible";
     oldCard.replaceWith(newCard);
     this.bindChecklistListeners(newCard);
+    this.bindSectionToggles(newCard);
     newCard.querySelector<HTMLInputElement>(`[${refocus.attr}="${CSS.escape(refocus.id)}"]`)?.focus({ preventScroll: true });
   }
 
@@ -164,9 +173,7 @@ export class BookViewChapters extends BookView {
       `;
     }
 
-    const visibleSections = this.missingHandsonOnly
-      ? chapter.sections.filter((s) => state.read[s.id] && !state.handsOn[s.id])
-      : chapter.sections;
+    const isCollapsed = this.collapsedChapterIds.has(chapter.id);
 
     return `
       <div class="chapter-card" data-chapter-id="${escapeHtml(chapter.id)}">
@@ -186,7 +193,13 @@ export class BookViewChapters extends BookView {
         </div>
         <div class="chapter-card-body">
           ${chapter.summary ? this.summaryBoxHtml(chapter.summary) : ""}
-          ${visibleSections.map((s) => this.sectionRowHtml(s, chapter.id, state)).join("") || `<p class="chapter-empty-filter">—</p>`}
+          <button type="button" class="section-list-toggle" data-sections-toggle="${escapeHtml(chapter.id)}" aria-expanded="${!isCollapsed}" aria-controls="sections-${escapeHtml(chapter.id)}">
+            <span class="section-list-chevron">${icon("chevronDown")}</span>
+            <span>${t("chapters.sections.toggle", { count: chapter.sections.length })}</span>
+          </button>
+          <div class="section-list" id="sections-${escapeHtml(chapter.id)}" data-section-list="${escapeHtml(chapter.id)}" ${isCollapsed ? "hidden" : ""}>
+            ${chapter.sections.map((s) => this.sectionRowHtml(s, chapter.id, state)).join("")}
+          </div>
           ${this.flashcardBlockHtml(chapter, state)}
           ${this.labBlockHtml(labByChapterId.get(chapter.id), glossaryById, state)}
         </div>

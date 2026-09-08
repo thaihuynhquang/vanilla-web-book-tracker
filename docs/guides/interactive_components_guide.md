@@ -94,13 +94,13 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
 
 ## 4. Chapters View Specifications (PRD-03)
 
-### 4.1. Always-Expanded Chapter Cards
-- **UI Component**: `Chapters View Component` (`<book-view-chapters>`), 15 `.chapter-card`s, no accordion.
-- **Flow**: every chapter renders fully expanded — header shows chapter number, title, a `N sections · ~M min` meta line, a `.status-badge--dynamic` pill, and `completed/total (pct%)`; body shows an optional chapter-summary box, then all section rows. `tbd` chapters (14, 15) render a "content not yet published" placeholder instead of a section list.
-- **Filtering**: a chapter filter-pill row (`chapterFilterChipsHtml()`, `src/views/helpers.ts`, `.filter-bar`/`.filter-pill`) narrows the list to one chapter at a time, or back to "All chapters" — this is the primary way to navigate a ~140-section page now that there's no collapse/expand.
+### 4.1. Chapter Cards with Collapsible Section List
+- **UI Component**: `Chapters View Component` (`<book-view-chapters>`), 15 `.chapter-card`s.
+- **Flow**: every chapter card always shows header (chapter number, title, `N sections · ~M min` meta line, `.status-badge--dynamic` pill, `completed/total (pct%)`), progress bar, optional chapter-summary box, flashcard card and lab card. The section list is collapsible per chapter via a `.section-list-toggle` button (`data-sections-toggle`, `chevronDown` icon that rotates on collapse); collapse state is an in-memory `Set<string>` of chapter ids on `BookViewChapters` — **not** persisted to `AppState`/`localStorage`, so it resets on tab switch, language/theme change, import, and reset. Default is expanded (empty set). `tbd` chapters (14, 15) render a "content not yet published" placeholder instead of a section list and have no toggle.
+- **Filtering**: a chapter filter-pill row (`chapterFilterChipsHtml()`, `src/views/helpers.ts`, `.filter-bar`/`.filter-pill`) narrows the list to one chapter at a time, or back to "All chapters".
 - **AC**:
-  - [ ] Selected chapter filter and the "missing hands-on" filter (§4.3) compose — both can be active at once.
-  - [ ] Toggling a section's read/hands-on checkbox re-renders the list without losing keyboard focus on that checkbox (the view records and restores `document.activeElement` around the `innerHTML` rebuild).
+  - [ ] Clicking a chapter's section-list toggle hides/shows only that chapter's section rows; header, progress bar, summary, flashcard and lab stay visible either way, and it does not trigger a full view re-render (mutates the DOM in place, same pattern as `patchChapterCard()`).
+  - [ ] Toggling a section's read/hands-on checkbox re-renders only that chapter's card (`patchChapterCard()`) without losing keyboard focus on that checkbox or losing the card's collapse state.
 
 ### 4.2. Section Checklist (Read + Hands-on)
 - **User Story**: As a reader, I want to separately mark a section as read and as hands-on'd, since some sections are theory-only.
@@ -110,12 +110,13 @@ This document is the **Product Requirement Document (PRD)** and User Interaction
   - [ ] Both states persist independently in `localStorage`.
   - [ ] Read contributes 40% weight, hands-on contributes 40% weight to overall progress.
 
-### 4.3. "Missing Hands-on" Filter
-- **User Story**: As a reader, I want to quickly find sections I've read but never coded along with.
-- **UI Component**: `Chapters View Component` (filter toggle above the accordion list).
-- **Flow**: when active, hide any section row where `read === true && handsOn === true` or `read === false`; show only `read === true && handsOn === false` rows, across all expanded chapters.
+### 4.3. Collapsible Section List
+- **User Story**: As a reader, I want to shrink a chapter down to its header/summary once I've skimmed its section list, without losing my read/hands-on progress or reloading the page.
+- **UI Component**: `Chapters View Component` (`.section-list-toggle` button per chapter card, `data-sections-toggle="<chapterId>"`, `aria-expanded`/`aria-controls`; the section rows live in a `.section-list[hidden]` sibling).
+- **Flow**: `click` on the toggle flips membership of the chapter id in `collapsedChapterIds` (in-memory `Set<string>`), sets `aria-expanded`, and toggles the `.section-list`'s `hidden` property directly — no `refresh()` call.
 - **AC**:
-  - [ ] Filter re-renders instantly on toggle, no page reload.
+  - [ ] Toggle responds instantly, no page reload, no full-view rebuild.
+  - [ ] Collapse state survives a same-card checklist toggle (`patchChapterCard()` re-reads `collapsedChapterIds` and re-binds the toggle).
 
 ---
 
@@ -187,9 +188,9 @@ Glossary terms and reading-list links render as one merged, flat grid — sorted
 | PRD-02.2 | Progress Overview Card | Dashboard | render | `calculateProgress()` | Single Overall % + one gradient bar. |
 | PRD-02.3 | Next Focus Card | Dashboard | `click` | `toggleRead()` / `toggleHandsOn()` | Marks recommended section/hands-on, recalculates. |
 | PRD-02.4 | Chapter Progress List | Dashboard | render | `calculateProgress().chapterProgresses` | Per-chapter status badge + % row, matches Chapters tab. |
-| PRD-03.1 | Always-Expanded Chapter Cards + Filter Pills | Chapters | `click` | local filter state | No accordion; `chapterFilterChipsHtml()` narrows to one chapter; `tbd` placeholder for ch.14–15. |
+| PRD-03.1 | Chapter Cards + Filter Pills | Chapters | `click` | local filter state | `chapterFilterChipsHtml()` narrows to one chapter; `tbd` placeholder for ch.14–15. |
 | PRD-03.2 | Section Checklist | Chapters | `change` | `toggleRead()` / `toggleHandsOn()` | Two independent persisted booleans per section; checkbox focus preserved across re-render. |
-| PRD-03.3 | Missing Hands-on Filter | Chapters | `click` | local filter state | Shows only read-but-not-handson sections, composes with the chapter filter. |
+| PRD-03.3 | Collapsible Section List | Chapters | `click` | in-memory `collapsedChapterIds` | Collapses/expands a chapter's section rows only; header/summary/flashcard/lab stay visible; not persisted. |
 | PRD-04.1 | Lab Checklist | Labs | `change` | `toggleLabDone()` | Contributes to 20%-weight axis. |
 | PRD-04.2 | Flashcard Task Checklist | Labs | `change` | `toggleFlashcardDone()` | Contributes to 20%-weight axis, no deck content stored. |
 | PRD-06.1 | Resources Search | Resources | `input` | `searchQuery` | Instant filter across terms + links, empty state. |

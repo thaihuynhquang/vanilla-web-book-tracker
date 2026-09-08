@@ -127,6 +127,7 @@
 .filter-pill,
 .nav-tab,
 .pomodoro-mode-btn,
+.section-list-toggle,
 input[type="checkbox"] {
   outline-offset: 2px;
 }
@@ -136,6 +137,7 @@ input[type="checkbox"] {
 .filter-pill:focus-visible,
 .nav-tab:focus-visible,
 .pomodoro-mode-btn:focus-visible,
+.section-list-toggle:focus-visible,
 input[type="checkbox"]:focus-visible {
   outline: 2px solid var(--primary);
 }
@@ -538,14 +540,6 @@ input[type="checkbox"]:focus-visible {
   --card-accent: var(--accent-lime);
   opacity: 0.85;
   background: color-mix(in srgb, var(--accent-lime) 8%, transparent);
-}
-
-.filter-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2xs);
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
 }
 
 /* Toasts */
