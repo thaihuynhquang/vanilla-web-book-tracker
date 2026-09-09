@@ -6,9 +6,6 @@
   scrollbar-width: none;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-main);
-  position: sticky;
-  top: 65px;
-  z-index: 15;
 }
 
 .nav-tabs-container::-webkit-scrollbar {

@@ -11,9 +11,10 @@
 
 .chapter-progress-title {
   flex: 1;
-  min-width: 0;
+  min-width: 8rem;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
 }
 
 .chapter-progress-pct {
@@ -75,12 +76,13 @@
   flex-direction: column;
   gap: 0.15rem;
   flex: 1;
-  min-width: 0;
+  min-width: 8rem;
 }
 
 .chapter-card-title {
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-lg);
+  overflow-wrap: anywhere;
 }
 
 .chapter-card-meta {
@@ -149,8 +151,9 @@
 
 .section-title {
   flex: 1;
-  min-width: 0;
+  min-width: 8rem;
   font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
 }
 
 .section-badge {
@@ -159,6 +162,8 @@
   font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-bold);
   border: 1px solid currentColor;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .section-badge--none {

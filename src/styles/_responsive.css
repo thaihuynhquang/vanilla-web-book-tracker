@@ -14,6 +14,15 @@
   .quit-box {
     flex-direction: column;
   }
+
+  .app-header {
+    flex-wrap: wrap;
+  }
+
+  .header-actions {
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 480px) {

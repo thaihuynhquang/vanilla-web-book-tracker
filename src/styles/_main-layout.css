@@ -426,6 +426,7 @@ input[type="checkbox"]:focus-visible {
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .status-badge--dynamic {

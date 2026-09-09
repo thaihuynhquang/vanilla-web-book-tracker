@@ -16,53 +16,55 @@
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
-    <header class="app-header">
-      <div class="header-brand">
-        <svg class="header-logo" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="var(--primary)" />
-              <stop offset="1" stop-color="var(--accent-purple)" />
-            </linearGradient>
-          </defs>
-          <rect width="32" height="32" rx="8" fill="url(#brand-grad)" />
-          <g stroke="#f9fafb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 11.4c-1.5-1.5-3.6-2.2-6.1-2.2H7.6v12.4h2.3c2.5 0 4.6.7 6.1 2.2" />
-            <path d="M16 11.4c1.5-1.5 3.6-2.2 6.1-2.2h2.3v12.4h-2.3c-2.5 0-4.6.7-6.1 2.2" />
-            <path d="M16 11.4v12.4" />
-          </g>
-          <path d="m17.8 18.6 2.6 2.6 5.4-5.7" stroke="url(#brand-grad)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" />
-          <path d="m17.8 18.6 2.6 2.6 5.4-5.7" stroke="#f9fafb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <div>
-          <h1 data-i18n="app.title">Vanilla Web Book Tracker</h1>
-          <p class="header-subtitle" data-i18n="app.subtitle">Reading &amp; Practice Tracker</p>
+    <div class="app-topbar">
+      <header class="app-header">
+        <div class="header-brand">
+          <svg class="header-logo" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="var(--primary)" />
+                <stop offset="1" stop-color="var(--accent-purple)" />
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" rx="8" fill="url(#brand-grad)" />
+            <g stroke="#f9fafb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 11.4c-1.5-1.5-3.6-2.2-6.1-2.2H7.6v12.4h2.3c2.5 0 4.6.7 6.1 2.2" />
+              <path d="M16 11.4c1.5-1.5 3.6-2.2 6.1-2.2h2.3v12.4h-2.3c-2.5 0-4.6.7-6.1 2.2" />
+              <path d="M16 11.4v12.4" />
+            </g>
+            <path d="m17.8 18.6 2.6 2.6 5.4-5.7" stroke="url(#brand-grad)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="m17.8 18.6 2.6 2.6 5.4-5.7" stroke="#f9fafb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <div>
+            <h1 data-i18n="app.title">Vanilla Web Book Tracker</h1>
+            <p class="header-subtitle" data-i18n="app.subtitle">Reading &amp; Practice Tracker</p>
+          </div>
         </div>
-      </div>
-      <div class="header-actions">
-        <button type="button" id="btn-export" class="icon-btn" data-i18n-title="header.export" title="Export"></button>
-        <button type="button" id="btn-import" class="icon-btn" data-i18n-title="header.import" title="Import"></button>
-        <input type="file" id="input-import" accept="application/json" hidden />
-        <button type="button" id="btn-reset" class="icon-btn icon-btn--danger" data-i18n-title="header.reset" title="Reset"></button>
-        <button type="button" id="btn-lang" class="icon-btn" data-i18n-title="header.lang">
-          <span id="btn-lang-label">EN</span>
-        </button>
-        <button type="button" id="btn-theme" class="icon-btn" data-i18n-title="header.theme">
-          <span id="btn-theme-icon"></span>
-        </button>
-      </div>
-    </header>
+        <div class="header-actions">
+          <button type="button" id="btn-export" class="icon-btn" data-i18n-title="header.export" title="Export"></button>
+          <button type="button" id="btn-import" class="icon-btn" data-i18n-title="header.import" title="Import"></button>
+          <input type="file" id="input-import" accept="application/json" hidden />
+          <button type="button" id="btn-reset" class="icon-btn icon-btn--danger" data-i18n-title="header.reset" title="Reset"></button>
+          <button type="button" id="btn-lang" class="icon-btn" data-i18n-title="header.lang">
+            <span id="btn-lang-label">EN</span>
+          </button>
+          <button type="button" id="btn-theme" class="icon-btn" data-i18n-title="header.theme">
+            <span id="btn-theme-icon"></span>
+          </button>
+        </div>
+      </header>
 
-    <nav class="nav-tabs-container">
-      <button type="button" class="nav-tab" data-nav-tab="dashboard">
-        <span>Dashboard</span>
-        <span id="badge-overall-pct" class="nav-tab-badge"></span>
-      </button>
-      <button type="button" class="nav-tab" data-nav-tab="chapters">Chapters</button>
-      <button type="button" class="nav-tab" data-nav-tab="pomodoro">Pomodoro</button>
-      <button type="button" class="nav-tab" data-nav-tab="resources">Resources</button>
-      <button type="button" class="nav-tab" data-nav-tab="quitcriteria">Quit Criteria</button>
-    </nav>
+      <nav class="nav-tabs-container">
+        <button type="button" class="nav-tab" data-nav-tab="dashboard">
+          <span>Dashboard</span>
+          <span id="badge-overall-pct" class="nav-tab-badge"></span>
+        </button>
+        <button type="button" class="nav-tab" data-nav-tab="chapters">Chapters</button>
+        <button type="button" class="nav-tab" data-nav-tab="pomodoro">Pomodoro</button>
+        <button type="button" class="nav-tab" data-nav-tab="resources">Resources</button>
+        <button type="button" class="nav-tab" data-nav-tab="quitcriteria">Quit Criteria</button>
+      </nav>
+    </div>
 
     <main class="main-content">
       <book-view-dashboard data-view="dashboard"></book-view-dashboard>
