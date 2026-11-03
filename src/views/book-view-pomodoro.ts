@@ -8,7 +8,7 @@ import { BookView } from "./base";
 
 type PomodoroMode = "focus" | "shortBreak" | "longBreak";
 
-const RING_RADIUS = 56;
+const RING_RADIUS = 54;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
 export class BookViewPomodoro extends BookView {
