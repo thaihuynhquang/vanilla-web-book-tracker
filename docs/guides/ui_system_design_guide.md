@@ -2,85 +2,49 @@
 
 Official UI System Design & Component Layout Guide for the **Vanilla Web Book Tracker**. Covers design language, tokens, component dictionary, and layout assembly. For architecture/state, see [architecture_guide.md](./architecture_guide.md).
 
-The visual system is ported from the sibling roadmap tracker (same tokens, same layer structure, same metric-tile/status-badge language) — this document covers what's specific to a *book* tracker: per-chapter status badges and progress rows, always-expanded chapter cards, a standalone Pomodoro view, and a small set of extra icons.
+The visual system follows the **OccupySaaS protest-poster** language — paper and ink, wide uppercase display type, square corners, thick rules and solid offset shadows with press feedback — recoloured around a single **poster red (`#E74C3C`, `rgb(231, 76, 60)`)** instead of OccupySaaS's own red. Readability comes first: `#E74C3C` is only 3.5:1 on paper and 3.8:1 under white text, so it is used as a *fill* with ink text on top (4.9:1), and a darker red (`--primary-text`) carries every red *foreground* role.
+
+This document also covers what's specific to a *book* tracker: per-chapter status badges and progress rows, chapter cards with a collapsible section list, a standalone Pomodoro view, and a small set of extra icons.
 
 ---
 
 ## 1. Visual Design Philosophy & Tokens
 
-### 1.1. Dark-First Aesthetic with Light Mode Fallback
-Same as the sibling project: deep dark background, elevated cards, glassmorphic header blur, theme swap via `data-theme` on `<html>`.
+### 1.1. Light-First Paper, Dark Ink Variant
+Light is the `:root` default (`color-scheme: light`); dark flips the same token names under `:root[data-theme="dark"]`. The saved/OS-preferred theme is applied via `data-theme` on `<html>`.
 
 ### 1.2. Color Palette System (`_tokens.css`)
 
-Reuse the exact token set below (same as the sibling project, plus two book-tracker-specific surface tints):
-
-| Token Variable | Dark Mode (Default) | Light Mode | Usage |
+| Token | Light | Dark | Use |
 | :--- | :--- | :--- | :--- |
-| `--bg-main` | `#0d1420` | `#f4f7fa` | Main body background |
-| `--bg-card` | `#161f2e` | `#ffffff` | Surface card background |
-| `--bg-card-hover` | `#1f2b3d` | `#e9eff6` | Card hover background |
-| `--bg-glass` | `rgba(22, 31, 46, 0.78)` | `rgba(255, 255, 255, 0.85)` | Sticky header glass (`backdrop-filter: blur(12px)`) |
-| `--border-color` | `rgba(148, 176, 214, 0.16)` | `rgba(15, 37, 64, 0.12)` | Card/input/separator border — also the fill of `.progress-bar-track` |
-| `--border-color-strong` | `rgba(148, 176, 214, 0.30)` | `rgba(15, 37, 64, 0.22)` | Hover/active border |
-| `--surface-tint` | `rgba(148, 176, 214, 0.05)` | `rgba(15, 37, 64, 0.035)` | Subtle elevation fill — `.item-row`'s resting background, and the default `--card-surface` for `.surface-card` (`.chapter-summary-box`) — theme-aware, unlike a hardcoded white-alpha tint |
-| `--surface-tint-strong` | `rgba(148, 176, 214, 0.11)` | `rgba(15, 37, 64, 0.07)` | Slightly stronger tint (`.tag`, `.section-num` chip, Pomodoro ring track) |
-| `--text-primary` | `#f2f7fb` | `#0c1826` | Headings, primary content |
-| `--text-secondary` | `#b3c2d6` | `#43566d` | Descriptions, inactive tabs |
-| `--text-muted` | `#8496ae` | `#6a7c93` | Metadata, footers, timestamps |
-| `--primary` | `#14b8a6` (Teal) | `#0f766e` | Brand color, active tab indicator, link color |
-| `--primary-hover` | `#0d9488` | `#115e59` | Primary button hover |
-| `--primary-glow` | `rgba(20, 184, 166, 0.35)` | `rgba(15, 118, 110, 0.20)` | Glow box-shadow |
-| `--primary-contrast` | `#04211d` | `#ffffff` | Foreground on a `--primary` fill (`.btn-primary`, `.filter-pill.active`, active Pomodoro pills) |
-| `--accent-lime` | `#84cc16` | `#4d7c0f` | Success / read+hands-on complete / chapter "done" status / Pomodoro break |
-| `--accent-lime-hover` | `#65a30d` | `#3f6212` | Break-mode primary button hover |
-| `--accent-lime-glow` | `rgba(132, 204, 22, 0.30)` | `rgba(77, 124, 15, 0.20)` | Lime glow (Pomodoro break ring) |
-| `--accent-amber` | `#fbbf24` | `#b45309` | Read-but-not-hands-on warning, chapter "in progress" status |
-| `--accent-rose` | `#fb7185` | `#be123c` | Danger action (reset), stop-signal box |
-| `--accent-sky` | `#60a5fa` | `#1d4ed8` | Info toast, external links |
-| `--accent-purple` | `#c084fc` | `#7e22ce` | Secondary accent gradient, lab/flashcard badges |
-| `--status-idle` | `#94a3b8` | `#64748b` | Chapter "not started" status — decoupled from `--text-muted` so idle chapters stay visible |
-| `--shadow-press` | `rgba(0, 0, 0, 0.25)` | `rgba(15, 37, 64, 0.18)` | Inset box-shadow on button/pill press |
+| `--bg-main` / `--bg-glass` | `#F8F5F0` (paper) | `#14110F` | page background, sticky top bar |
+| `--bg-card` | `#FFFFFF` | `#1F1A17` | card surfaces |
+| `--bg-card-hover` | `#FDEBE8` (red tint) | `#2E211E` | surface-card header bands |
+| `--ink` / `--border-color` | `#14110F` | `#000` / `#F5EEE6` | rules and borders |
+| `--text-primary` / `-secondary` / `-muted` | `#14110F` / `#433D37` / `#5B544C` | `#F5EEE6` / `#D8CEC3` / `#ACA196` | text (muted ≥ 6.1:1 on every surface) |
+| `--primary` / `--primary-hover` | `#E74C3C` / `#C0392B` | `#E74C3C` / `#C0392B` | **fills only** — active tab, marquee, metric icon, resource button, selection, progress stripes |
+| `--primary-contrast` | `#14110F` | `#14110F` | text drawn on `--primary` (4.9:1 — white would be 3.8:1) |
+| `--primary-text` / `-hover` | `#A8261A` / `#7D1A10` | `#FF8A7A` / `#FFB3A8` | red *foreground*: links, outlined numerals, tags, subtitle (≥ 5.6:1 on every surface) |
+| `--primary-strong` | `#C0392B` | `#F26B5C` | decorative strokes: pomodoro ring, inner card frames, tab hover underline |
+| `--shadow-accent` | `--primary` | `--primary` | accent offset shadows on buttons and hover lifts |
+| `--focus-ring` | `#1D4FBF` | `#8DB2FF` | `:focus-visible` outlines — blue so focus never reads as an error-red state |
+| `--on-accent` | `#FFFFFF` | `#14110F` | text on lime/amber/sky/rose fills |
+| `--accent-lime` | `#1D6B3A` | `#6DD391` | "done" status |
+| `--accent-amber` | `#8A5300` | `#F5B84A` | "in progress" status — pushed toward gold so it never reads as the brand red |
+| `--accent-sky` / `--accent-purple` | `#1D4FBF` / `#5A3D99` | `#8DB2FF` / `#C2A8FF` | info / resource badges |
+| `--accent-rose` | `#9C1F5E` | `#FF8AB8` | danger: reset hover, delete, error toast — magenta, distinct from the brand red |
+| `--status-idle` | `#5B544C` | `#ACA196` | "not started" |
 
-### 1.3. Radius, Shadow, Transition Tokens
+Every text/background pair meets WCAG AA (≥ 4.5:1); most exceed 6:1.
 
-```css
---radius-sm: 6px;      /* Badges, tags, small buttons */
---radius-md: 12px;     /* Buttons, inputs, action icons */
---radius-lg: 18px;     /* Chapter cards, metric cards */
---radius-full: 9999px; /* Progress rings, status pills */
+### 1.3. Border, Radius, Shadow, Transition Tokens
+- `--radius-{sm,md,lg}` are **0** (square corners); `--radius-full` stays for the pomodoro ring.
+- `--border-thin` (2px), `--border-thick` (3px), `--rule` (4px) solid ink lines.
+- Offset shadows have no blur. Interactive elements lift on hover (`translate(-2px,-2px)` + larger shadow) and press on `:active`.
+- Transitions: `--transition-fast: 0.12s`, `--transition-normal: 0.2s`.
 
---shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
---shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-
---transition-fast: 0.15s ease;
---transition-normal: 0.25s ease;
-
---font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-```
-
-`Inter` (weights 400–800) loads from Google Fonts in `index.html` with `display=swap`; the system-font fallback stack paints first so there's no invisible-text flash.
-
-### 1.4. Spacing & Typography Scale
-
-Every `padding`/`gap`/`font-size` is a token, not a raw rem literal — snapped to a 4px grid:
-
-```css
---space-3xs: 0.25rem;  --space-2xs: 0.375rem;  --space-xs: 0.5rem;
---space-sm:  0.75rem;  --space-md:  1rem;      --space-lg: 1.25rem;
---space-xl:  1.5rem;   --space-2xl: 2rem;      --space-3xl: 2.5rem;
-
---font-size-2xs: 0.7rem;  --font-size-xs: 0.75rem;  --font-size-sm: 0.85rem;
---font-size-md:  0.9rem;  --font-size-base: 0.95rem; --font-size-lg: 1.1rem;
---font-size-xl:  1.25rem; --font-size-2xl: 1.6rem;   --font-size-3xl: 3.5rem; /* Pomodoro digits only */
-
---font-weight-normal: 400;  --font-weight-medium: 500;  --font-weight-semibold: 600;
---font-weight-bold: 700;    --font-weight-black: 800;
-
---line-height-tight: 1.2;  --line-height-snug: 1.4;  --line-height-normal: 1.5;  --line-height-relaxed: 1.6;
---letter-spacing-tighter: -0.04em; --letter-spacing-tight: -0.02em;
---letter-spacing-wide: 0.04em;     --letter-spacing-wider: 0.08em;
-```
+### 1.4. Spacing & Typography
+4px-grid spacing tokens (`--space-3xs`…`--space-3xl`). Fonts load from Google Fonts in `index.html` with `display=swap`: **Archivo** (variable width; headings use `wdth` 125 via `--wdth-display`, uppercase, weight 900), **JetBrains Mono** for labels, numbers and badges, **Permanent Marker** for hand-lettered accents (next-section title, quit-card titles). A faint paper-grain SVG overlay sits on `body::before`.
 
 ---
 
@@ -106,16 +70,16 @@ src/styles/
 ## 3. UI Component Dictionary
 
 ### 3.1. Header Bar (`.app-header`)
-`justify-content: space-between`. Children: `.header-brand` (logo + "Vanilla Web Book Tracker" title, subtitle "Reading & Practice Tracker"), `.header-actions` (Export, Import, Reset-danger, Language toggle, Theme toggle) — same layout as the sibling project. The brand logo is an open-book glyph with a knockout check breaking out of the lower-right page, drawn on a `--primary → --accent-purple` gradient tile (`#brand-grad`); hover applies a subtle scale + tilt (`scale(1.08) rotate(-3deg)`) plus the existing `--primary-glow` drop-shadow.
+`justify-content: space-between`. Children: `.header-brand` (logo + "Vanilla Web Book Tracker" title, subtitle "Reading & Practice Tracker"), `.header-actions` (Export, Import, Reset-danger, Language toggle, Theme toggle) — same layout as the sibling project. The brand mark is a poster-red square with a 3px ink frame, an ink line-art open book and a white check mark; tilted -4°, straightens on hover. A decorative red slogan marquee (`.app-marquee`, `aria-hidden`, paused under `prefers-reduced-motion`) runs under the top bar.
 
 Stickiness lives one level up: `index.html` wraps `.app-header` and `.nav-tabs-container` together in `.app-topbar` (`position: sticky; top: 0`), so the two-row mobile header (below) and the tab bar stick as one unit instead of the tab bar needing a hardcoded offset under a header of varying height. All-icon `.header-actions` has no text label to hide for space, unlike the sibling project's labeled buttons — so at `max-width: 768px` (`_responsive.css`) `.app-header` gets `flex-wrap: wrap` and `.header-actions` gets `flex-basis: 100%; justify-content: flex-start`, forcing it onto its own row, left-aligned under `.header-brand`, rather than relying on wrap-if-it-happens-to-not-fit.
 
 ### 3.2. Navigation Tab Bar (`.nav-tabs-container`, `.nav-tab`)
-5 tabs: **Dashboard, Chapters, Pomodoro, Resources, Quit Criteria**. Horizontal-scroll on mobile, centered `max-width: 1200px` on desktop. Only the Dashboard tab shows a badge (`#badge-overall-pct`, `.nav-tab-badge`) with the weighted overall %. There is no separate Labs tab — the lab and flashcard deliverables render inside each chapter card (§3.4, §3.7). There is no separate Glossary tab either — glossary terms merged into the Resources tab (§3.8).
+5 tabs: **Dashboard, Chapters, Pomodoro, Resources, Quit Criteria**. Horizontal-scroll on mobile, centered `max-width: 1200px` on desktop. The active tab gets a solid red fill + ink text and a 4px ink underline; its badge inverts to ink with red text. Only the Dashboard tab shows a badge (`#badge-overall-pct`, `.nav-tab-badge`) with the weighted overall %. There is no separate Labs tab — the lab and flashcard deliverables render inside each chapter card (§3.4, §3.7). There is no separate Glossary tab either — glossary terms merged into the Resources tab (§3.8).
 
 ### 3.3. Dashboard View (`<book-view-dashboard>`)
 - **Stat grid** (`.stat-grid` → `.metric-card` × 4): sections read (`N/95`), hands-on sections done, chapter deliverables done (labs + flashcards), total Pomodoro focus hours. Each tile is an icon square (`.metric-icon--primary/--amber/--sky`, 15%-alpha tint of the accent color) + a big value + a muted label. There is deliberately **no** "overall %" tile — it would duplicate the progress card immediately below.
-- **Progress overview card** (`.card` → `.progress-header` + one `.progress-bar-track`): title + subtitle on the left, the big overall % (`.progress-percentage`, lime) on the right, one full-width gradient bar underneath (`.progress-bar-fill--dynamic`, primary→lime gradient when no `--status-color` is set). No per-axis breakdown bars — kept to a single glanceable stat, same shape as the sibling project's `.progress-card`.
+- **Progress overview card** (`.card` → `.progress-header` + one `.progress-bar-track`): title + subtitle on the left, the big overall % (`.progress-percentage`, outlined numeral stroked in `--primary-text`) on the right, one full-width bar underneath (`.progress-bar-fill--dynamic`, solid `--status-color`, falling back to `--primary-text`). No per-axis breakdown bars — kept to a single glanceable stat, same shape as the sibling project's `.progress-card`.
 - **Next-focus card** (`.card--accent-primary`, or `.card--accent-lime` when everything is done): rocket-tagged callout naming the active chapter and either the next unread section ("Mark as read") or the next section still missing hands-on ("Mark hands-on"), whichever applies. Recalculated from `calculateProgress()` on every state change.
 - **Chapter progress list** (`.chapter-progress-list` → `.chapter-progress-row`): one `.surface-card` per non-`tbd` chapter. Header band: number badge, title, `.status-badge--dynamic` pill + `%`. Body: a thin `.progress-bar-track--sm` bar plus a `.chapter-progress-meta` line (`completed/total sections · ~N min`, from `ChapterProgress.completedCount`/`total`/`estMinutes`). `--card-accent` is set to the chapter's `statusColor`; `--card-surface` overrides to `--bg-card` so the row still reads as a raised card against the page background. Status/color come from `ChapterProgress.status`/`statusColor` (`src/progress.ts`) — see §3.4. `.chapter-progress-title` gets `flex: 1; min-width: 8rem` (not `0`) so a long title wraps at word boundaries and forces `.surface-card-header`'s existing `flex-wrap: wrap` to drop the badge/`%` to their own line on narrow screens, instead of squeezing the title down to a sliver that breaks mid-word; `overflow-wrap: anywhere` stays as a fallback for the rare unbreakable string. `.status-badge` itself carries `flex-shrink: 0` so it never gets squeezed by its title sibling.
 
@@ -137,11 +101,11 @@ Stickiness lives one level up: `index.html` wraps `.app-header` and `.nav-tabs-c
 
 ### 3.6. Pomodoro View (`<book-view-pomodoro>`) — own tab
 - **Layout**: hero card, metric row, and history card all span the same full content width (no card-specific `max-width`) so the tab lines up with every other tab's cards — `.pomodoro-container > .card, .pomodoro-container > .stat-grid { margin-bottom: 0 }` avoids the double-margin (container `gap` + `.card`'s own `margin-bottom`) that used to throw the cards' vertical rhythm off.
-- **Hero card** (`.pomodoro-hero-card`): mode segmented-pill group (Focus/Short Break/Long Break, `aria-pressed` synced with `.active`), an SVG progress ring (`.pomodoro-ring-wrap`, sized `clamp(280px, 62vw, 400px)`, thin 6px stroke so the primary/lime arc reads as a line rather than a band, ambient glow via a `::before` radial-gradient — its color set by the local `--ring-glow` token, `--primary-glow` by default and `--accent-lime-glow` under `.pomodoro-widget.break` — that pulses while `.running`), digital countdown (`.pomodoro-time`, tabular-nums, `clamp(2.4rem, 11vw, 3.5rem)`, `role="timer"`), pill-shaped Start/Reset buttons (Reset carries the `rotateCcw` icon at 18px, sized down from the shared 22px control-icon rule since its thin outline glyph would otherwise read heavier than Start/Pause's solid fill icons at the same box size), and a duration-preset segmented pill group (`25/5`, `50/5`, `Custom`) plus a custom-duration row.
-- **Presets share the mode-pill's exact visual language**: `.pomodoro-modes` and `.pomodoro-presets` are one merged container rule (bordered pill-group), and `.pomodoro-mode-btn`/`.pomodoro-preset-btn` are one merged button rule (transparent/muted by default, `--surface-tint-strong` hover, `--primary` fill + glow + inset-shadow press when `.active`) — so the two rows look like a single design system, same visual family as the `.filter-pill` chapter-filter row (§3.2) but with its own token set. The break-mode lime override stays scoped to `.pomodoro-mode-btn[data-pomo-mode="…"]`, so preset pills (no `data-pomo-mode` attribute) never pick it up. Selecting a preset closes and deselects the Custom pill; opening Custom deselects both presets — exactly one pill reads "selected" at a time, same as the mode row.
+- **Hero card** (`.pomodoro-hero-card`): mode segmented-pill group (Focus/Short Break/Long Break, `aria-pressed` synced with `.active`), an SVG progress ring (`.pomodoro-ring-wrap`, sized `clamp(280px, 62vw, 400px)`, 10px `--primary-strong` stroke at radius 54 so the arc fits the 120-unit viewBox, a `::before` paper disc with a 3px ink border and an 8px offset shadow, and a small `--primary-strong` dot that pulses while `.running`), digital countdown (`.pomodoro-time`, tabular-nums, `clamp(2.4rem, 11vw, 3.5rem)`, `role="timer"`), pill-shaped Start/Reset buttons (Reset carries the `rotateCcw` icon at 18px, sized down from the shared 22px control-icon rule since its thin outline glyph would otherwise read heavier than Start/Pause's solid fill icons at the same box size), and a duration-preset segmented pill group (`25/5`, `50/5`, `Custom`) plus a custom-duration row.
+- **Presets share the mode-pill's exact visual language**: `.pomodoro-modes` and `.pomodoro-presets` are one merged container rule (bordered pill-group), and `.pomodoro-mode-btn`/`.pomodoro-preset-btn` are one merged button rule (transparent by default, `--surface-tint-strong` hover, `--primary` fill with `--primary-contrast` ink text when `.active`) — so the two rows look like a single design system, same visual family as the `.filter-pill` chapter-filter row (§3.2) but with its own token set. The break-mode ink override (Short/Long Break pills fill with `--text-primary`) stays scoped to `.pomodoro-mode-btn[data-pomo-mode="…"]`, so preset pills (no `data-pomo-mode` attribute) never pick it up. Selecting a preset closes and deselects the Custom pill; opening Custom deselects both presets — exactly one pill reads "selected" at a time, same as the mode row.
 - **Custom-duration row** (`.pomodoro-custom-form`, shown when the `Custom` pill is active) mirrors the reference roadmap repo's `.custom-inputs-row`: a single bordered line (no background fill) holding inline `label + input` pairs (`.pomodoro-custom-group`) instead of stacked label-above-input blocks, with small centered bold number fields (`.pomodoro-custom-input`, `--bg-main` fill against the card so they read as distinct inset controls) and the Apply button (`.btn.btn-primary.btn-sm`) at the end of the row.
-- **Break mode recolors the whole control cluster, not just the ring**: `setMode()` toggles `.break` on `.pomodoro-widget` (not the ring wrapper alone), so `.pomodoro-widget.break` drives the ring, its glow, the active Short/Long Break pill, and the Start/Pause button all switching from `--primary` to `--accent-lime` together.
-- **Interaction feedback follows the control's shape**: focus rings and the pressed state use `outline`/`box-shadow`, which clip to `border-radius`, never a background overlay or the bare UA rectangle — `.pomodoro-mode-btn` is in the shared `:focus-visible` group in `_main-layout.css` for this reason (`.pomodoro-preset-btn` gets the same treatment directly in `_pomodoro.css`). Preset/custom-apply controls get `disabled` while the timer is running (`setConfigEnabled()`) so a stray click can't silently reset an in-progress session; mode pills, preset pills, filter pills, and `.btn` all get hover/`:active` press states. The interactive chapter-filter row uses `.filter-pill`/`.filter-pill.active` (`_main-layout.css`) — a rectangular `--radius-md` button, `--bg-card` resting, `--bg-card-hover` + lift on hover, solid `--primary` fill when selected. Static, non-interactive labels elsewhere (lab API tags, resource card chapter tags) use the separate `.tag`/`.tag--primary` classes (§3.7, §3.8) — small `--radius-sm` pills with a tinted `--primary-glow` fill, no hover/press state, so they read as inert data rather than controls.
+- **Break mode recolors the whole control cluster, not just the ring**: `setMode()` toggles `.break` on `.pomodoro-widget` (not the ring wrapper alone), so `.pomodoro-widget.break` switches the ring to ink and the Start/Pause button to a red fill with ink text together.
+- **Interaction feedback follows the control's shape**: focus rings and the pressed state use `outline`/`box-shadow`, which clip to `border-radius`, never a background overlay or the bare UA rectangle — `.pomodoro-mode-btn` is in the shared `:focus-visible` group in `_main-layout.css` for this reason (`.pomodoro-preset-btn` gets the same treatment directly in `_pomodoro.css`). Preset/custom-apply controls get `disabled` while the timer is running (`setConfigEnabled()`) so a stray click can't silently reset an in-progress session; mode pills, preset pills, filter pills, and `.btn` all get hover/`:active` press states. The interactive chapter-filter row uses `.filter-pill`/`.filter-pill.active` (`_main-layout.css`) — a square button, `--bg-card` resting, offset-shadow lift on hover, solid ink fill when selected. Static, non-interactive labels elsewhere (lab API tags, resource card chapter tags) use the separate `.tag`/`.tag--primary` classes (§3.7, §3.8) — small square mono chips (`.tag--primary` in `--primary-text`), no hover/press state, so they read as inert data rather than controls.
 - **Metric row** (`#pomo-metrics.stat-grid`): three `.metric-card` tiles reusing the Dashboard's tile language (§3.3) — today's session count, today's focus minutes (+ hours, locale-formatted), and lifetime session count.
 - **History card** (`.pomodoro-history-card`): a `progress-card`-shaped card — `.progress-header` (title left, a `{count} sessions` subtitle right) over a reverse-chronological list of card-style rows (`.pomodoro-history-item`, `.item-row`-like shape), each with a lime "+1 Pomodoro" `.tag`, timestamp, duration, and a compact 32px delete `.icon-btn` with a rose hover.
 - Session data (`state.pomodoroSessions`) also feeds the Dashboard's "focus hours" stat tile (§3.3) — but the timer UI itself lives only here, not on the Dashboard.
@@ -154,7 +118,7 @@ A thin modifier over `.surface-card` (§3.4's summary box and the Dashboard's ch
 Rendered in that order — flashcard card, then lab card — as the last two children of `.chapter-card-body`.
 
 ### 3.8. Resource Card (`.resource-card`)
-The Resources tab renders one flat, chapter-sorted grid mixing glossary terms and reading-list links — no sub-tab, no bookmark/star (removed). Each card: tag row (`.resource-tag-row`) with a tinted type `.resource-badge` (`--term` purple, `--mdn` primary, `--spec` amber, `--article` sky, `--video` rose, `--demo` lime, `--tool` muted — all via `color-mix(in srgb, var(--badge-color) 15%, transparent)` so tints stay theme-aware) plus chapter `.tag`/`.tag--primary` tag(s); bold title; a 3-line-clamped description (a term's definition, or a link's chapter label); footer separated by a hairline border with an optional secondary link (a term's Spec link) on the left and a primary-glow "open link" button (`.btn--resource`) on the right. Card chrome (bg/border/radius/hover lift) matches `.deliverable-card`'s sibling shape.
+The Resources tab renders one flat, chapter-sorted grid mixing glossary terms and reading-list links — no sub-tab, no bookmark/star (removed). Each card: tag row (`.resource-tag-row`) with a tinted type `.resource-badge` (`--term` purple, `--mdn` primary, `--spec` amber, `--article` sky, `--video` rose, `--demo` lime, `--tool` muted — all via `color-mix(in srgb, var(--badge-color) 15%, transparent)` so tints stay theme-aware) plus chapter `.tag`/`.tag--primary` tag(s); bold title; a 3-line-clamped description (a term's definition, or a link's chapter label); footer separated by a hairline border with an optional secondary link (a term's Spec link) on the left and a red-fill "open link" button (`.btn--resource`, ink text) on the right. Card chrome (bg/border/radius/hover lift) matches `.deliverable-card`'s sibling shape.
 
 ### 3.9. Quit Criteria Module Card (`.quit-module-card`)
 Same layout as the sibling project's decision-matrix card: chapter title header, `.quit-box--trigger` (amber, "Stop signal") and `.quit-box--pivot` (lime, "Exit criteria") boxes side by side, stacking on mobile.
